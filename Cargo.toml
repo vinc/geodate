@@ -1,0 +1,8 @@
+[package]
+name = "detri"
+version = "0.1.0"
+authors = ["Vincent Ollivier <v@vinc.cc>"]
+
+[dependencies]
+time = "*"
+lazy_static = "*"
