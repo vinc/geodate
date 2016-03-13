@@ -1,25 +1,14 @@
-extern crate time;
-
 #[macro_use]
 extern crate lazy_static;
+extern crate time;
+
+mod data;
+
+use data::*;
 
 use std::io::prelude::*;
 use std::fs::File;
 use std::env;
-
-fn read_to_vec(filename: &str) -> Vec<i64> {
-    let mut f = File::open(filename).unwrap();
-    let mut s = String::new();
-    f.read_to_string(&mut s);
-    s.lines().map(|line| {
-        line.parse::<i64>().unwrap()
-    }).collect()
-}
-
-lazy_static! {
-    pub static ref SOLSTICES: Vec<i64> = { read_to_vec("solstices.csv") };
-    pub static ref NEW_MOONS: Vec<i64> = { read_to_vec("new_moons.csv") };
-}
 
 pub const J2000: f64 = 2451545.0009;
 pub const PI: f64 = std::f64::consts::PI;
@@ -71,7 +60,8 @@ fn julian_transit(timestamp: i64, longitude: f64) -> f64 {
 fn main() {
     let args: Vec<_> = env::args().collect();
     if args.len() < 3 {
-        panic!("Usage: detri <latitude> <longitude>");
+        println!("Usage: detri <latitude> <longitude>");
+        return;
     }
     // let lat = args[1].parse::<f64>().unwrap();
     let lon = args[2].parse::<f64>().unwrap();
@@ -120,8 +110,8 @@ fn main() {
     }
 
     let e = (10000 * (now - mid)) / (find_midnight(tom, lon) - mid);
-    let c = e % 100;
-    let b = e / 100;
+    let c = e / 100;
+    let b = e % 100;
 
-    println!("{:02}:{:02}:{:02}:{:02}:{:02}", y, m, d, b, c);
+    println!("{:02}:{:02}:{:02}:{:02}:{:02}", y, m, d, c, b);
 }
