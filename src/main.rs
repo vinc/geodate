@@ -6,8 +6,6 @@ mod data;
 
 use data::*;
 
-use std::io::prelude::*;
-use std::fs::File;
 use std::env;
 
 pub const J2000: f64 = 2451545.0009;
