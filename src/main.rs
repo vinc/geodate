@@ -3,35 +3,36 @@ extern crate lazy_static;
 extern crate time;
 
 mod data;
+mod julian;
+mod math;
+mod seasons;
 
 use data::*;
+use julian::*;
+use math::*;
+use seasons::*;
 
 use std::env;
 
-pub const J2000: f64 = 2451545.0009;
-pub const PI: f64 = std::f64::consts::PI;
+/*
+fn print_debug_time(timestamp: i64) {
+    println!(
+        "DEBUG: {} ==> {}",
+        timestamp, 
+        time::at(time::Timespec::new(timestamp, 0)).strftime("%c").unwrap()
+    );
+}
+*/
 
-fn find_midnight(timestamp: i64, longitude: f64) -> i64 {
+fn get_midnight(timestamp: i64, longitude: f64) -> i64 {
     julian_to_unix(julian_transit(timestamp, longitude) - 0.5)
 }
 
-fn sin_deg(num: f64) -> f64 {
-    (num * PI / 180.0).sin()
-}
-
-fn unix_to_julian(timestamp: i64) -> f64 {
-    (timestamp as f64 / 86400.0) + 2440587.5
-}
-
-fn julian_to_unix(date: f64) -> i64 {
-    ((date - 2440587.5) * 86400.0) as i64
-}
-
 fn julian_transit(timestamp: i64, longitude: f64) -> f64 {
-    let date = unix_to_julian(timestamp);
+    let jd = unix_to_julian(timestamp);
 
     // Julian Cycle
-    let n = (date - J2000 + longitude / 360.0 + 0.5).floor();
+    let n = (jd - J2000 + longitude / 360.0 + 0.5).floor();
 
     // Approximate Solar Noon
     let noon = J2000 + n - longitude / 360.0;
@@ -66,23 +67,28 @@ fn main() {
 
     let now = time::get_time().sec;
     let mut tom = now + 86400;
-    let mut mid = find_midnight(now, lon);
+    let mut mid = get_midnight(now, lon);
 
     if mid > now {
       tom = now;
-      mid = find_midnight(now - 86400, lon);
+      mid = get_midnight(now - 86400, lon);
     }
 
-    let mut solstices = SOLSTICES.iter();
+    let mut solstices = (1..50).map(|i| {
+        let new_year_timestamp = (i as f64 * 86400.0 * 365.25) as i64;
+        let mid_year_timestamp = new_year_timestamp - 180 * 86400;
+
+        get_december_solstice(mid_year_timestamp)
+    });
+
     let mut new_moons = NEW_MOONS.iter();
-    let mut solstice = solstices.next().unwrap();
     let mut new_moon = new_moons.next().unwrap();
+    let mut solstice = solstices.next().unwrap();
 
     let mut d = 0;
     let mut m = 0;
     let mut y = 0;
-    let mut n = 0;
-    let mut t = find_midnight(0, lon);
+    let mut t = get_midnight(0, lon);
 
     if t < 0 {
       t += 86400;
@@ -91,23 +97,19 @@ fn main() {
     while t < mid - 2000 { // Mean solar day approximation
         d += 1;
         t += 86400;
-        if *solstice < (t + 86400) {
-            solstice = solstices.next().unwrap();
-            n += 1;
-        }
         if *new_moon < (t + 86400) {
             new_moon = new_moons.next().unwrap();
             d = 0;
             m += 1;
-            if n == 2 {
-                n = 0;
+            if solstice < (t + 86400) {
+                solstice = solstices.next().unwrap();
                 m = 0;
                 y += 1;
             }
         }
     }
 
-    let e = (10000 * (now - mid)) / (find_midnight(tom, lon) - mid);
+    let e = (10000 * (now - mid)) / (get_midnight(tom, lon) - mid);
     let c = e / 100;
     let b = e % 100;
 
