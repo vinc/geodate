@@ -79,15 +79,16 @@ fn main() {
       mid = get_midnight(now - 86400, lon);
     }
 
-    let n = if use_solar_calendar { 4 } else { 1 }; // Nb of events per year
-    let mut seasonal_events = (1 * n .. 50 * n).map(|i| {
+    let n = 2 + (now / 86400 / 365) as usize;
+    let k = if use_solar_calendar { 4 } else { 1 }; // Nb of events per year
+    let mut seasonal_events = (1 * k .. n * k).map(|i| {
         // FIXME: Avoid bugs by picking a date around the middle of the year
-        let new_year_timestamp = ((i / n) as f64 * 86400.0 * 365.25) as i64;
+        let new_year_timestamp = ((i / k) as f64 * 86400.0 * 365.25) as i64;
         let mid_year_timestamp = new_year_timestamp - 180 * 86400;
 
         if use_solar_calendar {
             // FIXME: Don't use that low level function
-            let event_code = i % 4;
+            let event_code = i % k;
             get_sun_ephemeris(event_code, mid_year_timestamp)
         } else {
             get_december_solstice(mid_year_timestamp)
