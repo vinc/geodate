@@ -64,6 +64,7 @@ fn main() {
     }
     // let lat = args[1].parse::<f64>().unwrap();
     let lon = args[2].parse::<f64>().unwrap();
+    let use_solar_calendar = false;
 
     let now = time::get_time().sec;
     let mut tom = now + 86400;
@@ -74,16 +75,26 @@ fn main() {
       mid = get_midnight(now - 86400, lon);
     }
 
-    let mut solstices = (1..50).map(|i| {
-        let new_year_timestamp = (i as f64 * 86400.0 * 365.25) as i64;
+    let n = if use_solar_calendar { 4 } else { 1 }; // Nb of events per year
+    let mut seasonal_events = (1 * n .. 50 * n).map(|i| {
+        // FIXME: Avoid bugs by picking a date around the middle of the year
+        let new_year_timestamp = ((i / n) as f64 * 86400.0 * 365.25) as i64;
         let mid_year_timestamp = new_year_timestamp - 180 * 86400;
 
-        get_december_solstice(mid_year_timestamp)
+        if use_solar_calendar {
+            // FIXME: Don't use that low level function
+            let event_code = i % 4;
+            get_sun_ephemeris(event_code, mid_year_timestamp)
+        } else {
+            get_december_solstice(mid_year_timestamp)
+        }
     });
+
 
     let mut new_moons = NEW_MOONS.iter();
     let mut new_moon = new_moons.next().unwrap();
-    let mut solstice = solstices.next().unwrap();
+
+    let mut next_seasonal_event = seasonal_events.next().unwrap();
 
     let mut d = 0;
     let mut m = 0;
@@ -97,14 +108,26 @@ fn main() {
     while t < mid - 2000 { // Mean solar day approximation
         d += 1;
         t += 86400;
-        if *new_moon < (t + 86400) {
-            new_moon = new_moons.next().unwrap();
-            d = 0;
-            m += 1;
-            if solstice < (t + 86400) {
-                solstice = solstices.next().unwrap();
-                m = 0;
-                y += 1;
+        if use_solar_calendar {
+            if next_seasonal_event < (t + 86400) { // New month
+                next_seasonal_event = seasonal_events.next().unwrap();
+                d = 0;
+                m += 1;
+                if m == 4 { // New year
+                    m = 0;
+                    y += 1;
+                }
+            }
+        } else {
+            if *new_moon < (t + 86400) { // New yonth
+                new_moon = new_moons.next().unwrap();
+                d = 0;
+                m += 1;
+                if next_seasonal_event < (t + 86400) { // New year
+                    next_seasonal_event = seasonal_events.next().unwrap();
+                    m = 0;
+                    y += 1;
+                }
             }
         }
     }

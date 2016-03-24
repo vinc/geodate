@@ -3,10 +3,10 @@ use julian::*;
 
 fn compute_jdme(i: usize, m: f64) -> f64 {
     let jdme_terms = vec![
-        (2451900.05952, 365242.74049, -0.06223, -0.00823,  0.00032), // December Solstice
         (2451623.80984, 365242.37404,  0.05169, -0.00411, -0.00057), // March Equinoxe
         (2451716.56767, 365241.62603,  0.00325,  0.00888, -0.00030), // June Solstice
-        (2451810.21715, 365242.01767, -0.11575,  0.00337,  0.00078)  // September Equinoxe
+        (2451810.21715, 365242.01767, -0.11575,  0.00337,  0.00078), // September Equinoxe
+        (2451900.05952, 365242.74049, -0.06223, -0.00823,  0.00032)  // December Solstice
     ];
 
     let (a, b, c, d, e) = jdme_terms[i];
@@ -50,7 +50,8 @@ fn compute_periodic_terms(t: f64) -> f64 {
     })
 }
 
-fn sun_ephemeris(i: usize, timestamp: i64) -> i64 {
+// FIXME: Should be private
+pub fn get_sun_ephemeris(i: usize, timestamp: i64) -> i64 {
     let jd = unix_to_julian(timestamp);
 
     let y = jde_to_julian_year(jd).floor();
@@ -72,20 +73,20 @@ fn sun_ephemeris(i: usize, timestamp: i64) -> i64 {
     julian_to_unix(jdme + (0.00001 * s) / l)
 }
 
-pub fn get_december_solstice(timestamp: i64) -> i64 {
-    sun_ephemeris(0, timestamp)
-}
-
 /*
 pub fn get_march_equinoxe(timestamp: i64) -> i64 {
-    sun_ephemeris(1, timestamp)
+    get_sun_ephemeris(0, timestamp)
 }
 
 pub fn get_june_solstice(timestamp: i64) -> i64 {
-    sun_ephemeris(2, timestamp)
+    get_sun_ephemeris(1, timestamp)
 }
 
 pub fn get_september_equinoxe(timestamp: i64) -> i64 {
-    sun_ephemeris(3, timestamp)
+    get_sun_ephemeris(2, timestamp)
 }
 */
+
+pub fn get_december_solstice(timestamp: i64) -> i64 {
+    get_sun_ephemeris(3, timestamp)
+}
