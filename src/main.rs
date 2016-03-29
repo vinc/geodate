@@ -68,7 +68,7 @@ fn main() {
     }).collect();
 
     if args.len() < 3 {
-        println!("Usage: detri [options] <latitude> <longitude> [<timestamp>]");
+        println!("Usage: detri [--solar] <latitude> <longitude> [<timestamp>]");
         return;
     }
 
