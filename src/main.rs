@@ -57,19 +57,29 @@ fn julian_transit(timestamp: i64, longitude: f64) -> f64 {
 }
 
 fn main() {
-    let args: Vec<_> = env::args().collect();
+    let mut use_solar_calendar = false;
+
+    let args: Vec<_> = env::args().filter(|arg| {
+        if arg == "--solar" {
+            use_solar_calendar = true
+        }
+
+        !arg.starts_with("--")
+    }).collect();
+
     if args.len() < 3 {
-        println!("Usage: detri <latitude> <longitude> [<timestamp>]");
+        println!("Usage: detri [options] <latitude> <longitude> [<timestamp>]");
         return;
     }
+
     let now = if args.len() == 4 {
         args[3].parse::<i64>().unwrap()
     } else {
         time::get_time().sec
     };
+
     // let lat = args[1].parse::<f64>().unwrap();
     let lon = args[2].parse::<f64>().unwrap();
-    let use_solar_calendar = false;
 
     let mut tom = now + 86400;
     let mut mid = get_midnight(now, lon);
