@@ -6,21 +6,12 @@ mod data;
 mod date;
 mod julian;
 mod math;
+mod moon;
 mod seasons;
 
 use date::*;
 
 use std::env;
-
-/*
-fn print_debug_time(timestamp: i64) {
-    println!(
-        "DEBUG: {} ==> {}",
-        timestamp, 
-        time::at(time::Timespec::new(timestamp, 0)).strftime("%c").unwrap()
-    );
-}
-*/
 
 fn main() {
     let mut use_solar_calendar = false;

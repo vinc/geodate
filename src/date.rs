@@ -3,6 +3,8 @@ use julian::*;
 use math::*;
 use seasons::*;
 
+use time;
+
 fn get_midnight(timestamp: i64, longitude: f64) -> i64 {
     julian_to_unix(julian_transit(timestamp, longitude) - 0.5)
 }
@@ -92,7 +94,7 @@ pub fn print_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) {
                 }
             }
         } else {
-            if *new_moon < (t + 86400) { // New yonth
+            if *new_moon < (t + 86400) { // New month
                 new_moon = new_moons.next().unwrap();
                 d = 0;
                 m += 1;
