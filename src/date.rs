@@ -1,9 +1,18 @@
 use data::*;
 use julian::*;
 use math::*;
+use moon::*;
 use seasons::*;
 
 use time;
+
+fn print_debug_time(timestamp: i64) {
+    println!(
+        "DEBUG: {} ==> {}",
+        timestamp,
+        time::at(time::Timespec::new(timestamp, 0)).strftime("%c").unwrap()
+    );
+}
 
 fn get_midnight(timestamp: i64, longitude: f64) -> i64 {
     julian_to_unix(julian_transit(timestamp, longitude) - 0.5)
@@ -69,6 +78,9 @@ pub fn print_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) {
     let mut new_moons = NEW_MOONS.iter();
     let mut new_moon = new_moons.next().unwrap();
 
+    // Lunations since the first new moon of January 2000
+    //let mut lunation_number = 0;
+
     let mut next_seasonal_event = seasonal_events.next().unwrap();
 
     let mut d = 0;
@@ -94,7 +106,14 @@ pub fn print_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) {
                 }
             }
         } else {
+            //let new_moon_computed = get_new_moon(lunation_number);
+            //print_debug_time(new_moon_computed);
+            //print_debug_time(*new_moon);
+            //println!("=> {}", *new_moon - new_moon_computed);
+            //println!("");
             if *new_moon < (t + 86400) { // New month
+                //lunation_number += 1;
+
                 new_moon = new_moons.next().unwrap();
                 d = 0;
                 m += 1;
