@@ -2,7 +2,6 @@
 extern crate lazy_static;
 extern crate time;
 
-mod data;
 mod date;
 mod julian;
 mod math;

@@ -17,6 +17,8 @@ pub fn unix_to_year(timestamp: i64) -> f64 {
     1970.0 + (timestamp as f64) / 86400.0 / 365.25
 }
 
+// From "Polynomial Expressions for Delta T"
+// By Fred Espenak, GSFC Planetary Systems Laboratory
 pub fn delta_time(year: f64) -> f64 {
     let y = match year {
         1961.0...1986.0 => 1975.0,
