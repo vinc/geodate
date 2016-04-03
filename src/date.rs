@@ -79,7 +79,7 @@ pub fn print_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) {
     let mut new_moon = new_moons.next().unwrap();
 
     // Lunations since the first new moon of January 2000
-    //let mut lunation_number = 0;
+    let mut lunation_number = -371;
 
     let mut next_seasonal_event = seasonal_events.next().unwrap();
 
@@ -106,15 +106,15 @@ pub fn print_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) {
                 }
             }
         } else {
-            //let new_moon_computed = get_new_moon(lunation_number);
+            let new_moon_computed = get_new_moon(lunation_number);
+            //print_debug_time(t);
             //print_debug_time(new_moon_computed);
             //print_debug_time(*new_moon);
             //println!("=> {}", *new_moon - new_moon_computed);
             //println!("");
             if *new_moon < (t + 86400) { // New month
-                //lunation_number += 1;
-
                 new_moon = new_moons.next().unwrap();
+                lunation_number += 1;
                 d = 0;
                 m += 1;
                 if next_seasonal_event < (t + 86400) { // New year
