@@ -4,6 +4,10 @@ use std::ops::Rem;
 use math::*;
 use julian::*;
 
+pub fn get_lunation_number(timestamp: i64) -> f64 {
+    ((unix_to_year(timestamp) - 2000.0) * 12.3685).floor()
+}
+
 pub fn get_new_moon(lunation_number: f64) -> i64 {
     get_moon_phase(0, lunation_number)
 }
@@ -235,6 +239,11 @@ pub fn get_moon_phase(phase: usize, lunation_number: f64) -> i64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn get_lunation_number_test() {
+        assert_eq!(-283.0, get_lunation_number(225085072));
+    }
 
     #[test]
     fn get_new_moon_test() {
