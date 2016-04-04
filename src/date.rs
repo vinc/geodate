@@ -47,7 +47,14 @@ fn julian_transit(timestamp: i64, longitude: f64) -> f64 {
     transit
 }
 
-pub fn print_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) {
+pub fn get_lunisolar_date(timestamp: i64, longitude: f64) -> String {
+    get_date(timestamp, longitude, false)
+}
+pub fn get_solar_date(timestamp: i64, longitude: f64) -> String {
+    get_date(timestamp, longitude, true)
+}
+
+pub fn get_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) -> String {
     let now = timestamp;
     let lon = longitude;
 
@@ -125,5 +132,21 @@ pub fn print_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) {
     let c = e / 100;
     let b = e % 100;
 
-    println!("{:02}:{:02}:{:02}:{:02}:{:02}", y, m, d, c, b);
+    format!("{:02}:{:02}:{:02}:{:02}:{:02}", y, m, d, c, b)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn get_solar_date_test() {
+        // Stonehenge coordinates: 51.178844, -1.826189
+        assert_eq!("44:02:00:15:34", get_solar_date(1403322675, -1.826189));
+    }
+
+    #[test]
+    fn get_lunisolar_date_test() {
+        assert_eq!("14:03:03:71:54", get_lunisolar_date(449947500, -2.7653));
+    }
 }

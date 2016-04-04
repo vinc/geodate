@@ -37,5 +37,5 @@ fn main() {
     // let lat = args[1].parse::<f64>().unwrap();
     let lon = args[2].parse::<f64>().unwrap();
 
-    print_date(now, lon, use_solar_calendar);
+    println!("{}", get_date(now, lon, use_solar_calendar));
 }
