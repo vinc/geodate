@@ -124,3 +124,15 @@ pub fn get_new_moon(lunation_number: i64) -> i64 {
 
     tt - dt
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn get_new_moon_test() {
+        let lunation_number = -283;
+
+        assert_eq!(225085015, get_new_moon(lunation_number));
+    }
+}
