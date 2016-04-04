@@ -86,7 +86,7 @@ pub fn get_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) -> Str
     let m = n * 13;
     let mut new_moons = (0..m).map(|i| {
         // Lunations since the first new moon of January 2000
-        let lunation_number = (i as i64) - 371;
+        let lunation_number = (i as f64) - 371.0;
 
         get_new_moon(lunation_number)
     });

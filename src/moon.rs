@@ -4,25 +4,25 @@ use std::ops::Rem;
 use math::*;
 use julian::*;
 
-pub fn get_new_moon(lunation_number: i64) -> i64 {
+pub fn get_new_moon(lunation_number: f64) -> i64 {
     get_moon_phase(0, lunation_number)
 }
-pub fn get_first_quarter_moon(lunation_number: i64) -> i64 {
+pub fn get_first_quarter_moon(lunation_number: f64) -> i64 {
     get_moon_phase(1, lunation_number)
 }
-pub fn get_full_moon(lunation_number: i64) -> i64 {
+pub fn get_full_moon(lunation_number: f64) -> i64 {
     get_moon_phase(2, lunation_number)
 }
-pub fn get_last_quarter_moon(lunation_number: i64) -> i64 {
+pub fn get_last_quarter_moon(lunation_number: f64) -> i64 {
     get_moon_phase(3, lunation_number)
 }
 
 // From "Astronomical Algorithms"
 // By Jean Meeus
-pub fn get_moon_phase(phase: usize, lunation_number: i64) -> i64 {
+pub fn get_moon_phase(phase: usize, lunation_number: f64) -> i64 {
     //let y = 1970.0 + (timestamp as f64) / 86400.0 / 365.25;
     //let k = ((y - 2000.0) * 12.3685).floor();
-    let k = lunation_number as f64;
+    let k = lunation_number;
     let t = k / 1236.85;
 
     // k + 0.25 => first quarter
@@ -103,7 +103,7 @@ pub fn get_moon_phase(phase: usize, lunation_number: i64) -> i64 {
     // Multiply each previous terms by E to a given power
     // [new moon, first quarter, full moon, last quarter]
     let pow_cors = vec![
-        [0, 1, 0, 1],
+        [0, 0, 0, 0],
         [1, 1, 1, 1],
         [0, 1, 0, 1],
         [0, 0, 0, 0],
@@ -173,6 +173,16 @@ pub fn get_moon_phase(phase: usize, lunation_number: i64) -> i64 {
         acc + num_cors[i][j] * e.powi(pow_cors[i][j]) * sin_deg(sin_cor)
     });
 
+    println!("DEBUG: k   = {:>13.5}", k);
+    println!("DEBUG: t   = {:>13.5}", t);
+    println!("DEBUG: e   = {:>13.5}", e);
+    println!("DEBUG: s  = {:>13.5}", s);
+    println!("DEBUG: m  = {:>13.5}", m);
+    println!("DEBUG: f   = {:>13.5}", f);
+    println!("DEBUG: o   = {:>13.5}", o);
+    println!("DEBUG: jde = {:>13.5}", jde);
+    println!("DEBUG: cor = {:>13.5}", cor);
+
     // Additional corrections for quarters
     let w = 0.00306
           - 0.00038 * e * cos_deg(s)
@@ -204,28 +214,20 @@ pub fn get_moon_phase(phase: usize, lunation_number: i64) -> i64 {
             + 0.000_035 * sin_deg(239.56 + 25.513_099 * k)
             + 0.000_023 * sin_deg(331.55 +  3.592_518 * k);
 
-    //println!("DEBUG: k   = {:>13.5}", k);
-    //println!("DEBUG: t   = {:>13.5}", t);
-    //println!("DEBUG: e   = {:>13.5}", e);
-    //println!("DEBUG: s  = {:>13.5}", s);
-    //println!("DEBUG: m  = {:>13.5}", m);
-    //println!("DEBUG: f   = {:>13.5}", f);
-    //println!("DEBUG: o   = {:>13.5}", o);
-    //println!("DEBUG: jde = {:>13.5}", jde);
-    //println!("DEBUG: cor = {:>13.5}", cor);
-    //println!("DEBUG: add = {:>13.5}", add);
+    println!("DEBUG: w   = {:>13.5}", w);
+    println!("DEBUG: add = {:>13.5}", add);
 
     let jde = jde + cor + add;
 
-    //println!("DEBUG: jde = {:>13.5}", jde);
-  
-    //println!("DEBUG: k={}, jde={}", k, jde);
+    println!("DEBUG: jde = {:>13.5}", jde);
+    println!("DEBUG: k={}, jde={}", k, jde);
     
     let tt = julian_to_unix(jde);
     let dt = delta_time(unix_to_year(tt)).floor() as i64;
-    //println!("DEBUG: tt  = {:>13.5}", tt);
-    //println!("DEBUG: yy  = {:>13.5}", unix_to_year(tt));
-    //println!("DEBUG: dt  = {:>13.5}", dt);
+
+    println!("DEBUG: tt  = {:>13.5}", tt);
+    println!("DEBUG: yy  = {:>13.5}", unix_to_year(tt));
+    println!("DEBUG: dt  = {:>13.5}", dt);
 
     tt - dt
 }
@@ -236,8 +238,15 @@ mod tests {
 
     #[test]
     fn get_new_moon_test() {
-        let lunation_number = -283;
+        let lunation_number = -283.0;
 
         assert_eq!(225085015, get_new_moon(lunation_number));
+    }
+
+    #[test]
+    fn get_last_quarter_moon_test() {
+        let lunation_number = 544.75;
+
+        assert_eq!(2337032810, get_last_quarter_moon(lunation_number));
     }
 }
