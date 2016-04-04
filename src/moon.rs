@@ -4,9 +4,22 @@ use std::ops::Rem;
 use math::*;
 use julian::*;
 
+pub fn get_new_moon(lunation_number: i64) -> i64 {
+    get_moon_phase(0, lunation_number)
+}
+pub fn get_first_quarter_moon(lunation_number: i64) -> i64 {
+    get_moon_phase(1, lunation_number)
+}
+pub fn get_full_moon(lunation_number: i64) -> i64 {
+    get_moon_phase(2, lunation_number)
+}
+pub fn get_last_quarter_moon(lunation_number: i64) -> i64 {
+    get_moon_phase(3, lunation_number)
+}
+
 // From "Astronomical Algorithms"
 // By Jean Meeus
-pub fn get_new_moon(lunation_number: i64) -> i64 {
+pub fn get_moon_phase(phase: usize, lunation_number: i64) -> i64 {
     //let y = 1970.0 + (timestamp as f64) / 86400.0 / 365.25;
     //let k = ((y - 2000.0) * 12.3685).floor();
     let k = lunation_number as f64;
@@ -56,6 +69,9 @@ pub fn get_new_moon(lunation_number: i64) -> i64 {
             -         0.000_000_150     * t.powi(3)
             +         0.000_000_000_730 * t.powi(4);
 
+    // Correction to be added to JDE
+
+    // [New Moon, First Quarter, Full Moon, Last Quarter]
     let num_cors = vec![
         [-0.40720, -0.62801, -0.40614, -0.62801],
         [ 0.17241,  0.17172,  0.17302,  0.17172],
@@ -84,6 +100,8 @@ pub fn get_new_moon(lunation_number: i64) -> i64 {
         [ 0.00002, -0.00002,  0.00002, -0.00002]
     ];
 
+    // Multiply each previous terms by E to a given power
+    // [new moon, first quarter, full moon, last quarter]
     let pow_cors = vec![
         [0, 1, 0, 1],
         [1, 1, 1, 1],
@@ -112,39 +130,64 @@ pub fn get_new_moon(lunation_number: i64) -> i64 {
         [0, 0, 0, 0]
     ];
 
-    let sin_cors = vec![
-        [m,                 m,                 m,                 m                ],
-        [s,                 s,                 s,                 s                ],
-        [2.0 * m,           m + s,             2.0 * m,           m + s            ],
-        [2.0 * f,           2.0 * m,           2.0 * f,           2.0 * m          ],
-        [m - s,             2.0 * f,           m - s,             2.0 * f          ],
-        [m + s,             m - s,             m + s,             m - s            ],
-        [2.0 * s,           2.0 * s,           2.0 * s,           2.0 * s          ],
-        [m - 2.0 * f,       m - 2.0 * f,       m - 2.0 * f,       m - 2.0 * f      ],
-        [m + 2.0 * f,       m + 2.0 * f,       m + 2.0 * f,       m + 2.0 * f      ],
-        [2.0 * m + s,       3.0 * m,           2.0 * m + s,       3.0 * m          ],
-        [3.0 * m,           2.0 * m - s,       3.0 * m,           2.0 * m - s      ],
-        [s + 2.0 * f,       s + 2.0 * f,       s + 2.0 * f,       s + 2.0 * f      ],
-        [s - 2.0 * f,       s - 2.0 * f,       s - 2.0 * f,       s - 2.0 * f      ],
-        [2.0 * m - s,       m + 2.0 * s,       2.0 * m - s,       m + 2.0 * s      ],
-        [o,                 2.0 * m + s,       o,                 2.0 * m + s      ],
-        [m + 2.0 * s,       o,                 m + 2.0 * s,       o,               ],
-        [2.0 * m - 2.0 * f, m - s - 2.0 * f,   2.0 * m - 2.0 * f, m - s - 2.0 * f  ],
-        [3.0 * s,           2.0 * m + 2.0 * f, 3.0 * s,           2.0 * m + 2.0 * f],
-        [m + s - 2.0 * f,   m + s + 2.0 * f,   m + s - 2.0 * f,   m + s + 2.0 * f  ],
-        [2.0 * m + 2.0 * f, m - 2.0 * s,       2.0 * m + 2.0 * f, m - 2.0 * s      ],
-        [m + s + 2.0 * f,   m + s - 2.0 * f,   m + s + 2.0 * f,   m + s - 2.0 * f  ],
-        [m - s + 2.0 * f,   3.0 * s,           m - s + 2.0 * f,   3.0 * s          ],
-        [m - s - 2.0 * f,   2.0 * m - 2.0 * f, m - s - 2.0 * f,   2.0 * m - 2.0 * f],
-        [3.0 * m + s,       m - s + 2.0 * f,   3.0 * m + s,       m - s + 2.0 * f  ],
-        [4.0 * m,           3.0 * m + s,       4.0 * m,           3.0 * m + s      ]
+    // Sum the following terms multiplied a number of times
+    // given in the next table, and multiply the sinus of the
+    // result by the previously obtained number.
+    let terms = [s, m, f, o];
+
+    // [new and full moon, first and last quarter]
+    let mul_cors = vec![
+        [[ 0.0,  1.0,  0.0,  0.0], [ 0.0,  1.0,  0.0,  0.0]],
+        [[ 1.0,  0.0,  0.0,  0.0], [ 1.0,  0.0,  0.0,  0.0]],
+        [[ 0.0,  2.0,  0.0,  0.0], [ 1.0,  1.0,  0.0,  0.0]],
+        [[ 0.0,  0.0,  2.0,  0.0], [ 0.0,  2.0,  0.0,  0.0]],
+        [[-1.0,  1.0,  0.0,  0.0], [ 0.0,  0.0,  2.0,  0.0]],
+        [[ 1.0,  1.0,  0.0,  0.0], [-1.0,  1.0,  0.0,  0.0]],
+        [[ 2.0,  0.0,  0.0,  0.0], [ 2.0,  0.0,  0.0,  0.0]],
+        [[ 0.0,  1.0, -2.0,  0.0], [ 0.0,  1.0, -2.0,  0.0]],
+        [[ 0.0,  1.0,  2.0,  0.0], [ 0.0,  1.0,  2.0,  0.0]],
+        [[ 1.0,  2.0,  0.0,  0.0], [ 0.0,  3.0,  0.0,  0.0]],
+        [[ 0.0,  3.0,  0.0,  0.0], [-1.0,  2.0,  0.0,  0.0]],
+        [[ 1.0,  0.0,  2.0,  0.0], [ 1.0,  0.0,  2.0,  0.0]],
+        [[ 1.0,  0.0, -2.0,  0.0], [ 1.0,  0.0, -2.0,  0.0]],
+        [[-1.0,  2.0,  0.0,  0.0], [ 2.0,  1.0,  0.0,  0.0]],
+        [[ 0.0,  0.0,  0.0,  1.0], [ 1.0,  2.0,  0.0,  0.0]],
+        [[ 2.0,  1.0,  0.0,  0.0], [ 0.0,  0.0,  0.0,  1.0]],
+        [[ 0.0,  2.0, -2.0,  0.0], [-1.0,  1.0, -2.0,  0.0]],
+        [[ 3.0,  0.0,  0.0,  0.0], [ 0.0,  2.0,  2.0,  0.0]],
+        [[ 1.0,  1.0, -2.0,  0.0], [ 1.0,  1.0,  2.0,  0.0]],
+        [[ 0.0,  2.0,  2.0,  0.0], [-2.0,  1.0,  0.0,  0.0]],
+        [[ 1.0,  1.0,  2.0,  0.0], [ 1.0,  1.0, -2.0,  0.0]],
+        [[-1.0,  1.0,  2.0,  0.0], [ 3.0,  0.0,  0.0,  0.0]],
+        [[-1.0,  1.0, -2.0,  0.0], [ 0.0,  2.0, -2.0,  0.0]],
+        [[ 1.0,  3.0,  0.0,  0.0], [-1.0,  1.0,  2.0,  0.0]],
+        [[ 0.0,  4.0,  0.0,  0.0], [ 1.0,  3.0,  0.0,  0.0]]
     ];
 
-    let j = 0;
-    let cor = (0..25).fold(0.0, |acc, i|
-        acc + num_cors[i][j] * e.powi(pow_cors[i][j]) * sin_deg(sin_cors[i][j])
-    );
+    let j = phase;
+    let cor = (0..25).fold(0.0, |acc, i| {
+        let sin_cor = (0..4).fold(0.0, |sa, si| {
+            sa + mul_cors[i][j % 2][si] * terms[si]
+        });
 
+        acc + num_cors[i][j] * e.powi(pow_cors[i][j]) * sin_deg(sin_cor)
+    });
+
+    // Additional corrections for quarters
+    let w = 0.00306
+          - 0.00038 * e * cos_deg(s)
+          + 0.00026 *     cos_deg(m)
+          - 0.00002 *     cos_deg(m - s)
+          + 0.00002 *     cos_deg(m + s)
+          + 0.00002 *     cos_deg(2.0 * f);
+
+    let cor = match phase {
+        1 => cor + w,
+        3 => cor - w,
+        _ => cor
+    };
+
+    // Additional corrections for all phases
     let add = 0.0
             + 0.000_325 * sin_deg(299.77 +  0.107_408 * k - 0.009_173 * t.powi(2))
             + 0.000_165 * sin_deg(251.88 +  0.016_321 * k)
