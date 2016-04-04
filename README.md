@@ -18,12 +18,17 @@ To install Detri from source:
 Usage
 -----
 
-If you were watching the sunrise on the day of the winter solstice at
-Stonehenge and runing this tool at the same time (what a crazy idea,
-look at the sun, it's beautiful!), you would see this output:
+Run this tool with a longitude and a latitude as arguments and you will get
+the date formatted in a lunisolar calendar:
 
-    $ detri 51.178844 -1.826189
-    45:12:11:33:54
+    $ detri -46.90 168.12
+    45:06:02:52:92
+
+Add a timestamp to have the date of a particular moment (here it's during the
+sunrise on the day of the summer solstice at Stonehenge):
+
+    $ detri 51.178844 -1.826189 1403322675
+    44:05:24:15:34
 
 
 License
