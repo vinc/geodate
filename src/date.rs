@@ -47,12 +47,14 @@ fn julian_transit(timestamp: i64, longitude: f64) -> f64 {
     transit
 }
 
+/*
 pub fn get_lunisolar_date(timestamp: i64, longitude: f64) -> String {
     get_date(timestamp, longitude, false)
 }
 pub fn get_solar_date(timestamp: i64, longitude: f64) -> String {
     get_date(timestamp, longitude, true)
 }
+*/
 
 pub fn get_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) -> String {
     let now = timestamp;

@@ -4,13 +4,16 @@ use std::ops::Rem;
 use math::*;
 use julian::*;
 
+/*
 pub fn get_lunation_number(timestamp: i64) -> f64 {
     ((unix_to_year(timestamp) - 2000.0) * 12.3685).floor()
 }
+*/
 
 pub fn get_new_moon(lunation_number: f64) -> i64 {
     get_moon_phase(0, lunation_number)
 }
+/*
 pub fn get_first_quarter_moon(lunation_number: f64) -> i64 {
     get_moon_phase(1, lunation_number)
 }
@@ -20,6 +23,7 @@ pub fn get_full_moon(lunation_number: f64) -> i64 {
 pub fn get_last_quarter_moon(lunation_number: f64) -> i64 {
     get_moon_phase(3, lunation_number)
 }
+*/
 
 // From "Astronomical Algorithms"
 // By Jean Meeus
