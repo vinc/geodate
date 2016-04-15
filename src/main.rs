@@ -24,7 +24,7 @@ fn main() {
     }).collect();
 
     if args.len() < 3 {
-        println!("Usage: detri [--solar] <latitude> <longitude> [<timestamp>]");
+        println!("Usage: geodate [--solar] <latitude> <longitude> [<timestamp>]");
         return;
     }
 
