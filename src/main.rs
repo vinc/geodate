@@ -6,7 +6,7 @@ mod date;
 mod julian;
 mod math;
 mod moon;
-mod seasons;
+mod earth_orbit;
 
 use date::*;
 
