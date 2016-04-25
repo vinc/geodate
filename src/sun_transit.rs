@@ -33,9 +33,13 @@ pub fn get_noon(timestamp: i64, longitude: f64) -> i64 {
 
 #[allow(dead_code)]
 pub fn get_midday(timestamp: i64, longitude: f64) -> i64 {
-    julian_to_unix(julian_transit(timestamp, longitude))
+    let jde = julian_transit(timestamp, longitude);
+
+    julian_to_unix(jde) // FIXME: Correct for dynamical time?
 }
 
 pub fn get_midnight(timestamp: i64, longitude: f64) -> i64 {
-    julian_to_unix(julian_transit(timestamp, longitude) - 0.5)
+    let jde = julian_transit(timestamp, longitude);
+
+    julian_to_unix(jde - 0.5) // FIXME: Correct for dynamical time?
 }

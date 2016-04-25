@@ -209,14 +209,7 @@ pub fn get_moon_phase(phase: usize, lunation_number: f64) -> i64 {
     //println!("DEBUG: jde = {:>13.5}", jde);
     //println!("DEBUG: k={}, jde={}", k, jde);
     
-    let tt = julian_to_unix(jde);
-    let dt = delta_time(unix_to_year(tt)).floor() as i64;
-
-    //println!("DEBUG: tt  = {:>13.5}", tt);
-    //println!("DEBUG: yy  = {:>13.5}", unix_to_year(tt));
-    //println!("DEBUG: dt  = {:>13.5}", dt);
-
-    tt - dt
+    dynamic_to_universal_time(julian_to_unix(jde))
 }
 
 pub fn get_new_moon(lunation_number: f64) -> i64 {

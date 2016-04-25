@@ -19,7 +19,7 @@ pub fn unix_to_year(timestamp: i64) -> f64 {
 
 // From "Polynomial Expressions for Delta T"
 // By Fred Espenak, GSFC Planetary Systems Laboratory
-pub fn delta_time(year: f64) -> f64 {
+fn delta_time(year: f64) -> f64 {
     let y = match year {
         1961.0...1986.0 => 1975.0,
         1986.0...2005.0 => 2000.0,
@@ -48,4 +48,8 @@ pub fn delta_time(year: f64) -> f64 {
 
         _ => 0.0
     }
+}
+
+pub fn dynamic_to_universal_time(timestamp: i64) -> i64 {
+    timestamp - delta_time(unix_to_year(timestamp)).floor() as i64
 }
