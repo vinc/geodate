@@ -2,13 +2,14 @@
 extern crate lazy_static;
 extern crate time;
 
-mod date;
+mod earth_orbit;
+mod geodate;
 mod julian;
 mod math;
-mod moon;
-mod earth_orbit;
+mod moon_phase;
+mod sun_transit;
 
-use date::*;
+use geodate::*;
 
 use std::env;
 

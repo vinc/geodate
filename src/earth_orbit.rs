@@ -73,19 +73,20 @@ pub fn get_sun_ephemeris(i: usize, timestamp: i64) -> i64 {
     julian_to_unix(jdme + (0.00001 * s) / l)
 }
 
-/*
+#[allow(dead_code)]
 pub fn get_march_equinoxe(timestamp: i64) -> i64 {
     get_sun_ephemeris(0, timestamp)
 }
 
+#[allow(dead_code)]
 pub fn get_june_solstice(timestamp: i64) -> i64 {
     get_sun_ephemeris(1, timestamp)
 }
 
+#[allow(dead_code)]
 pub fn get_september_equinoxe(timestamp: i64) -> i64 {
     get_sun_ephemeris(2, timestamp)
 }
-*/
 
 pub fn get_december_solstice(timestamp: i64) -> i64 {
     get_sun_ephemeris(3, timestamp)

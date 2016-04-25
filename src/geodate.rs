@@ -1,60 +1,6 @@
-use julian::*;
-use math::*;
-use moon::*;
 use earth_orbit::*;
-
-//use time;
-
-/*
-fn print_debug_time(timestamp: i64) {
-    println!(
-        "DEBUG: {} ==> {}",
-        timestamp,
-        time::at(time::Timespec::new(timestamp, 0)).strftime("%c").unwrap()
-    );
-}
-*/
-
-fn get_midnight(timestamp: i64, longitude: f64) -> i64 {
-    julian_to_unix(julian_transit(timestamp, longitude) - 0.5)
-}
-
-fn julian_transit(timestamp: i64, longitude: f64) -> f64 {
-    let jd = unix_to_julian(timestamp);
-
-    // Julian Cycle
-    let n = (jd - J2000 + longitude / 360.0 + 0.5).floor();
-
-    // Approximate Solar Noon
-    let noon = J2000 + n - longitude / 360.0;
-
-    // Solar Mean Anomaly
-    let anomaly = (357.5291 + 0.98560028 * (noon - J2000)) % 360.0;
-
-    // Equation of the Center
-    let center = 1.9148 * sin_deg(1.0 * anomaly)
-               + 0.0200 * sin_deg(2.0 * anomaly)
-               + 0.0003 * sin_deg(3.0 * anomaly);
-
-    // Ecliptic Longitude
-    let ecliptic_longitude = (anomaly + center + 102.9372 + 180.0) % 360.0;
-
-    // Solar Transit
-    let transit = noon
-                + 0.0053 * sin_deg(anomaly)
-                - 0.0069 * sin_deg(2.0 * ecliptic_longitude);
-
-    transit
-}
-
-/*
-pub fn get_lunisolar_date(timestamp: i64, longitude: f64) -> String {
-    get_date(timestamp, longitude, false)
-}
-pub fn get_solar_date(timestamp: i64, longitude: f64) -> String {
-    get_date(timestamp, longitude, true)
-}
-*/
+use moon_phase::*;
+use sun_transit::*;
 
 pub fn get_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) -> String {
     let now = timestamp;
@@ -135,6 +81,16 @@ pub fn get_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) -> Str
     let b = e % 100;
 
     format!("{:02}:{:02}:{:02}:{:02}:{:02}", y, m, d, c, b)
+}
+
+#[allow(dead_code)]
+pub fn get_lunisolar_date(timestamp: i64, longitude: f64) -> String {
+    get_date(timestamp, longitude, false)
+}
+
+#[allow(dead_code)]
+pub fn get_solar_date(timestamp: i64, longitude: f64) -> String {
+    get_date(timestamp, longitude, true)
 }
 
 #[cfg(test)]

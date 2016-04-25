@@ -4,27 +4,6 @@ use std::ops::Rem;
 use math::*;
 use julian::*;
 
-/*
-pub fn get_lunation_number(timestamp: i64) -> f64 {
-    ((unix_to_year(timestamp) - 2000.0) * 12.3685).floor()
-}
-*/
-
-pub fn get_new_moon(lunation_number: f64) -> i64 {
-    get_moon_phase(0, lunation_number)
-}
-/*
-pub fn get_first_quarter_moon(lunation_number: f64) -> i64 {
-    get_moon_phase(1, lunation_number)
-}
-pub fn get_full_moon(lunation_number: f64) -> i64 {
-    get_moon_phase(2, lunation_number)
-}
-pub fn get_last_quarter_moon(lunation_number: f64) -> i64 {
-    get_moon_phase(3, lunation_number)
-}
-*/
-
 // From "Astronomical Algorithms"
 // By Jean Meeus
 pub fn get_moon_phase(phase: usize, lunation_number: f64) -> i64 {
@@ -238,6 +217,30 @@ pub fn get_moon_phase(phase: usize, lunation_number: f64) -> i64 {
     //println!("DEBUG: dt  = {:>13.5}", dt);
 
     tt - dt
+}
+
+pub fn get_new_moon(lunation_number: f64) -> i64 {
+    get_moon_phase(0, lunation_number)
+}
+
+#[allow(dead_code)]
+pub fn get_first_quarter_moon(lunation_number: f64) -> i64 {
+    get_moon_phase(1, lunation_number)
+}
+
+#[allow(dead_code)]
+pub fn get_full_moon(lunation_number: f64) -> i64 {
+    get_moon_phase(2, lunation_number)
+}
+
+#[allow(dead_code)]
+pub fn get_last_quarter_moon(lunation_number: f64) -> i64 {
+    get_moon_phase(3, lunation_number)
+}
+
+#[allow(dead_code)]
+pub fn get_lunation_number(timestamp: i64) -> f64 {
+    ((unix_to_year(timestamp) - 2000.0) * 12.3685).floor()
 }
 
 #[cfg(test)]
