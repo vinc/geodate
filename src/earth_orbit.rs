@@ -70,7 +70,7 @@ pub fn get_sun_ephemeris(i: usize, timestamp: i64) -> i64 {
 
     let s = compute_periodic_terms(t);
 
-    julian_to_unix(jdme + (0.00001 * s) / l)
+    terrestrial_to_universal_time(julian_to_unix(jdme + (0.00001 * s) / l))
 }
 
 #[allow(dead_code)]

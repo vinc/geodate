@@ -209,7 +209,7 @@ pub fn get_moon_phase(phase: usize, lunation_number: f64) -> i64 {
     //println!("DEBUG: jde = {:>13.5}", jde);
     //println!("DEBUG: k={}, jde={}", k, jde);
     
-    dynamic_to_universal_time(julian_to_unix(jde))
+    terrestrial_to_universal_time(julian_to_unix(jde))
 }
 
 pub fn get_new_moon(lunation_number: f64) -> i64 {
@@ -247,15 +247,17 @@ mod tests {
 
     #[test]
     fn get_new_moon_test() {
+        // Example 49.a from "Astronomical Algoritms"
+        // New Moon: 1977-02-18 03:37:42 TD
         let lunation_number = -283.0;
-
         assert_eq!(225085015, get_new_moon(lunation_number));
     }
 
     #[test]
     fn get_last_quarter_moon_test() {
+        // Example 49.b from "Astronomical Algoritms"
+        // New Moon: 2044-01-21 23:48:17 TD
         let lunation_number = 544.75;
-
-        assert_eq!(2337032810, get_last_quarter_moon(lunation_number));
+        assert_eq!(2337032897, get_last_quarter_moon(lunation_number));
     }
 }
