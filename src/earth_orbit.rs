@@ -1,12 +1,13 @@
 use math::*;
 use julian::*;
+use delta_time::*;
 
 fn compute_jdme(i: usize, m: f64) -> f64 {
     let jdme_terms = vec![
-        (2451623.80984, 365242.37404,  0.05169, -0.00411, -0.00057), // March Equinoxe
-        (2451716.56767, 365241.62603,  0.00325,  0.00888, -0.00030), // June Solstice
-        (2451810.21715, 365242.01767, -0.11575,  0.00337,  0.00078), // September Equinoxe
-        (2451900.05952, 365242.74049, -0.06223, -0.00823,  0.00032)  // December Solstice
+        (2451_623.80984, 365_242.37404,  0.05169, -0.00411, -0.00057), // March Equinoxe
+        (2451_716.56767, 365_241.62603,  0.00325,  0.00888, -0.00030), // June Solstice
+        (2451_810.21715, 365_242.01767, -0.11575,  0.00337,  0.00078), // September Equinoxe
+        (2451_900.05952, 365_242.74049, -0.06223, -0.00823,  0.00032)  // December Solstice
     ];
 
     let (a, b, c, d, e) = jdme_terms[i];
@@ -70,6 +71,7 @@ pub fn get_sun_ephemeris(i: usize, timestamp: i64) -> i64 {
 
     let s = compute_periodic_terms(t);
 
+    // FIXME: Improve the accuracy
     terrestrial_to_universal_time(julian_to_unix(jdme + (0.00001 * s) / l))
 }
 

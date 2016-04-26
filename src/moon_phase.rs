@@ -3,6 +3,7 @@ extern crate time;
 use std::ops::Rem;
 use math::*;
 use julian::*;
+use delta_time::*;
 
 // From "Astronomical Algorithms"
 // By Jean Meeus
@@ -239,6 +240,7 @@ pub fn get_lunation_number(timestamp: i64) -> f64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use delta_time::*;
 
     #[test]
     fn get_lunation_number_test() {
@@ -250,7 +252,8 @@ mod tests {
         // Example 49.a from "Astronomical Algoritms"
         // New Moon: 1977-02-18 03:37:42 TD
         let lunation_number = -283.0;
-        assert_eq!(225085015, get_new_moon(lunation_number));
+        let t = terrestrial_to_universal_time(225085062);
+        assert_eq!(t, get_new_moon(lunation_number));
     }
 
     #[test]
@@ -258,6 +261,7 @@ mod tests {
         // Example 49.b from "Astronomical Algoritms"
         // New Moon: 2044-01-21 23:48:17 TD
         let lunation_number = 544.75;
-        assert_eq!(2337032897, get_last_quarter_moon(lunation_number));
+        let t = terrestrial_to_universal_time(2337032897);
+        assert_eq!(t, get_last_quarter_moon(lunation_number));
     }
 }
