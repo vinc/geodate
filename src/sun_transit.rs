@@ -53,25 +53,25 @@ pub fn get_noon(timestamp: i64, longitude: f64) -> i64 {
 pub fn get_midday(timestamp: i64, longitude: f64) -> i64 {
     let jde = event_equation(Event::Transit, timestamp, longitude, 0.0, 0.0);
 
-    julian_to_unix(jde)
+    terrestrial_to_universal_time(julian_to_unix(jde))
 }
 
 pub fn get_midnight(timestamp: i64, longitude: f64) -> i64 {
     let jde = event_equation(Event::Transit, timestamp, longitude, 0.0, 0.0);
 
-    julian_to_unix(jde - 0.5)
+    terrestrial_to_universal_time(julian_to_unix(jde - 0.5))
 }
 
 pub fn get_sunrise(timestamp: i64, longitude: f64, latitude: f64) -> i64 {
     let jde = event_equation(Event::Rising, timestamp, longitude, latitude, 0.0);
 
-    julian_to_unix(jde)
+    terrestrial_to_universal_time(julian_to_unix(jde))
 }
 
 pub fn get_sunset(timestamp: i64, longitude: f64, latitude: f64) -> i64 {
     let jde = event_equation(Event::Setting, timestamp, longitude, latitude, 0.0);
 
-    julian_to_unix(jde)
+    terrestrial_to_universal_time(julian_to_unix(jde))
 }
 
 #[cfg(test)]
