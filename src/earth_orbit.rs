@@ -93,3 +93,23 @@ pub fn get_september_equinoxe(timestamp: i64) -> i64 {
 pub fn get_december_solstice(timestamp: i64) -> i64 {
     get_sun_ephemeris(3, timestamp)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use delta_time::*;
+
+    #[test]
+    fn get_june_solstice_test() {
+        // Example 27.a from "Astronomical Algoritms"
+        // June Solstice: 1962-06-21 21:25:08 TD
+        let t = terrestrial_to_universal_time(-237609292);
+        assert_eq!(t, get_june_solstice(-239414400));
+    }
+
+    #[test]
+    fn get_december_solstice_test() {
+        assert_eq!(1356088297, get_december_solstice(1338508800)); // 2012
+        assert_eq!(1450759677, get_december_solstice(1451606400)); // 2015
+    }
+}
