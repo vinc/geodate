@@ -2,10 +2,12 @@ use std;
 
 const PI: f64 = std::f64::consts::PI;
 
+// FIXME: Use builtin rust to_radians()
 pub fn rad(num: f64) -> f64 {
     num * PI / 180.0
 }
 
+// FIXME: Use builtin rust to_degrees()
 pub fn deg(num: f64) -> f64 {
     num * 180.0 / PI
 }
@@ -26,6 +28,18 @@ pub fn asin_deg(num: f64) -> f64 {
     deg(num.asin())
 }
 
+pub fn atan2_deg(x: f64, y: f64) -> f64 {
+    deg(x.atan2(y))
+}
+
+pub fn dec_deg(d: f64, m: f64, s: f64) -> f64 {
+    d + m / 60.0 + s / 3600.0
+}
+
+pub fn modulo(x: f64, y: f64) -> f64 {
+    (y + x % y) % y
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -38,5 +52,10 @@ mod tests {
     #[test]
     fn acos_deg_test() {
         assert_eq!(180.0, acos_deg(-1.0));
+    }
+
+    #[test]
+    fn dec_deg_test() {
+        assert_eq!(1.3958333333333333, dec_deg(1.0, 23.0, 45.0));
     }
 }
