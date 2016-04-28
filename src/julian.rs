@@ -5,7 +5,7 @@ pub fn unix_to_julian(timestamp: i64) -> f64 {
 }
 
 pub fn julian_to_unix(jd: f64) -> i64 {
-    ((jd - 2440587.5) * 86400.0) as i64
+    ((jd - 2440587.5) * 86400.0).round() as i64
 }
 
 // Returns the Julian year for a given Julian ephemeris day
@@ -33,7 +33,7 @@ mod tests {
     macro_rules! assert_approx_eq {
         ($a:expr, $b:expr, $e:expr) => ({
             let (a, b, e) = (&$a, &$b, &$e);
-            assert!((*a - *b).abs() < *e, "{} is not within {} of {}", *a, *e, *b);
+            assert!((*a - *b).abs() <= *e, "{} is not within {} of {}", *a, *e, *b);
         })
     }
 

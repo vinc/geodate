@@ -222,7 +222,7 @@ mod tests {
     macro_rules! assert_approx_eq {
         ($a:expr, $b:expr, $e:expr) => ({
             let (a, b, e) = (&$a, &$b, &$e);
-            assert!((*a - *b).abs() < *e, "{} is not within {} of {}", *a, *e, *b);
+            assert!((*a - *b).abs() <= *e, "{} is not within {} of {}", *a, *e, *b);
         })
     }
 
@@ -297,7 +297,7 @@ mod tests {
         ];
 
         for (t0, t1, _, lon) in times {
-            assert_eq!(parse_time(t0), get_noon(parse_time(t1), lon));
+            assert_approx_eq!(parse_time(t0), get_noon(parse_time(t1), lon), 1);
         }
     }
 
@@ -313,7 +313,7 @@ mod tests {
         ];
 
         for (t0, t1, lat, lon) in times {
-            assert_eq!(parse_time(t0), get_sunrise(parse_time(t1), lon, lat));
+            assert_approx_eq!(parse_time(t0), get_sunrise(parse_time(t1), lon, lat), 5);
         }
     }
 
@@ -328,7 +328,7 @@ mod tests {
         ];
 
         for (t0, t1, lat, lon) in times {
-            assert_eq!(parse_time(t0), get_sunset(parse_time(t1), lon, lat));
+            assert_approx_eq!(parse_time(t0), get_sunset(parse_time(t1), lon, lat), 5);
         }
     }
 }

@@ -54,7 +54,7 @@ mod tests {
     macro_rules! assert_approx_eq {
         ($a:expr, $b:expr, $e:expr) => ({
             let (a, b, e) = (&$a, &$b, &$e);
-            assert!((*a - *b).abs() < *e, "{} is not within {} of {}", *a, *e, *b);
+            assert!((*a - *b).abs() <= *e, "{} is not within {} of {}", *a, *e, *b);
         })
     }
 
