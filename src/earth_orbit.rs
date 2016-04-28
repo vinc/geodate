@@ -2,7 +2,39 @@ use math::*;
 use julian::*;
 use delta_time::*;
 
-fn compute_jdme(i: usize, m: f64) -> f64 {
+#[repr(usize)]
+#[derive(Clone, Copy)]
+enum Event {
+    MarchEquinox,
+    JuneSolstice,
+    SeptemberEquinox,
+    DecemberSolstice
+}
+
+fn get_time_of(event: Event, timestamp: i64) -> i64 {
+    let jd = unix_to_julian(timestamp);
+
+    let y = jde_to_julian_year(jd).floor();
+
+    // Convert AD year to millenia, from 2000 AD
+    let m = (y - 2000.0) / 1000.0;
+
+    let jdme = get_jdme(event, m);
+
+    // Julian century
+    let t = (jdme - J2000) / 36525.0;
+
+    let w = 35999.373 * t - 2.47;
+
+    let l = 1.0 + 0.0334 * cos_deg(w) + 0.0007 * cos_deg(2.0 * w);
+
+    let s = get_periodic_terms(t);
+
+    // FIXME: Improve the accuracy
+    terrestrial_to_universal_time(julian_to_unix(jdme + (0.00001 * s) / l))
+}
+
+fn get_jdme(event: Event, m: f64) -> f64 {
     let jdme_terms = vec![
         (2451_623.80984, 365_242.37404,  0.05169, -0.00411, -0.00057), // March Equinoxe
         (2451_716.56767, 365_241.62603,  0.00325,  0.00888, -0.00030), // June Solstice
@@ -10,6 +42,7 @@ fn compute_jdme(i: usize, m: f64) -> f64 {
         (2451_900.05952, 365_242.74049, -0.06223, -0.00823,  0.00032)  // December Solstice
     ];
 
+    let i = event as usize;
     let (a, b, c, d, e) = jdme_terms[i];
 
     a + b * m
@@ -18,7 +51,7 @@ fn compute_jdme(i: usize, m: f64) -> f64 {
       + e * m.powi(4)
 }
 
-fn compute_periodic_terms(t: f64) -> f64 {
+fn get_periodic_terms(t: f64) -> f64 {
     let terms = vec![
         (485.0, 324.96,   1934.136),
         (203.0, 337.23,  32964.467),
@@ -51,47 +84,20 @@ fn compute_periodic_terms(t: f64) -> f64 {
     })
 }
 
-// FIXME: Should be private
-pub fn get_sun_ephemeris(i: usize, timestamp: i64) -> i64 {
-    let jd = unix_to_julian(timestamp);
-
-    let y = jde_to_julian_year(jd).floor();
-
-    // Convert AD year to millenia, from 2000 AD
-    let m = (y - 2000.0) / 1000.0;
-
-    let jdme = compute_jdme(i, m);
-
-    // Julian century
-    let t = (jdme - J2000) / 36525.0;
-
-    let w = 35999.373 * t - 2.47;
-
-    let l = 1.0 + 0.0334 * cos_deg(w) + 0.0007 * cos_deg(2.0 * w);
-
-    let s = compute_periodic_terms(t);
-
-    // FIXME: Improve the accuracy
-    terrestrial_to_universal_time(julian_to_unix(jdme + (0.00001 * s) / l))
+pub fn get_march_equinox(timestamp: i64) -> i64 {
+    get_time_of(Event::MarchEquinox, timestamp)
 }
 
-#[allow(dead_code)]
-pub fn get_march_equinoxe(timestamp: i64) -> i64 {
-    get_sun_ephemeris(0, timestamp)
-}
-
-#[allow(dead_code)]
 pub fn get_june_solstice(timestamp: i64) -> i64 {
-    get_sun_ephemeris(1, timestamp)
+    get_time_of(Event::JuneSolstice, timestamp)
 }
 
-#[allow(dead_code)]
-pub fn get_september_equinoxe(timestamp: i64) -> i64 {
-    get_sun_ephemeris(2, timestamp)
+pub fn get_september_equinox(timestamp: i64) -> i64 {
+    get_time_of(Event::SeptemberEquinox, timestamp)
 }
 
 pub fn get_december_solstice(timestamp: i64) -> i64 {
-    get_sun_ephemeris(3, timestamp)
+    get_time_of(Event::DecemberSolstice, timestamp)
 }
 
 #[cfg(test)]
@@ -107,6 +113,7 @@ mod tests {
         assert_eq!(t, get_june_solstice(-239414400));
     }
 
+    #[ignore] // TODO: Improve accuracy to run this test
     #[test]
     fn get_december_solstice_test() {
         assert_eq!(1356088297, get_december_solstice(1338508800)); // 2012

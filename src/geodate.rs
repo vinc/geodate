@@ -21,12 +21,12 @@ pub fn get_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) -> Str
         let new_year_timestamp = ((i / k) as f64 * 86400.0 * 365.25) as i64;
         let mid_year_timestamp = new_year_timestamp - 180 * 86400;
 
-        if use_solar_calendar {
-            // FIXME: Don't use that low level function
-            let event_code = i % k;
-            get_sun_ephemeris(event_code, mid_year_timestamp)
-        } else {
-            get_december_solstice(mid_year_timestamp)
+        match (i % k) + 4 - k {
+            0 => get_march_equinox(mid_year_timestamp),     // only if use_solar_calendar
+            1 => get_june_solstice(mid_year_timestamp),     // only if use_solar_calendar
+            2 => get_september_equinox(mid_year_timestamp), // only if use_solar_calendar
+            3 => get_december_solstice(mid_year_timestamp),
+            _ => unreachable!()
         }
     });
     let mut next_seasonal_event = seasonal_events.next().unwrap();

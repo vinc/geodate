@@ -5,9 +5,18 @@ use math::*;
 use julian::*;
 use delta_time::*;
 
+#[repr(usize)]
+#[derive(Clone, Copy)]
+enum MoonPhase {
+    NewMoon,
+    FirstQuarterMoon,
+    FullMoon,
+    LastQuarterMoon
+}
+
 // From "Astronomical Algorithms"
 // By Jean Meeus
-pub fn get_moon_phase(phase: usize, lunation_number: f64) -> i64 {
+fn get_time_of(phase: MoonPhase, lunation_number: f64) -> i64 {
     //let y = 1970.0 + (timestamp as f64) / 86400.0 / 365.25;
     //let k = ((y - 2000.0) * 12.3685).floor();
     let k = lunation_number;
@@ -152,7 +161,7 @@ pub fn get_moon_phase(phase: usize, lunation_number: f64) -> i64 {
         [[ 0.0,  4.0,  0.0,  0.0], [ 1.0,  3.0,  0.0,  0.0]]
     ];
 
-    let j = phase;
+    let j = phase as usize;
     let cor = (0..25).fold(0.0, |acc, i| {
         let sin_cor = (0..4).fold(0.0, |sa, si| {
             sa + mul_cors[i][j % 2][si] * terms[si]
@@ -180,9 +189,9 @@ pub fn get_moon_phase(phase: usize, lunation_number: f64) -> i64 {
           + 0.00002 *     cos_deg(2.0 * f);
 
     let cor = match phase {
-        1 => cor + w,
-        3 => cor - w,
-        _ => cor
+        MoonPhase::FirstQuarterMoon => cor + w,
+        MoonPhase::LastQuarterMoon  => cor - w,
+        _                           => cor
     };
 
     // Additional corrections for all phases
@@ -214,22 +223,22 @@ pub fn get_moon_phase(phase: usize, lunation_number: f64) -> i64 {
 }
 
 pub fn get_new_moon(lunation_number: f64) -> i64 {
-    get_moon_phase(0, lunation_number)
+    get_time_of(MoonPhase::NewMoon, lunation_number)
 }
 
 #[allow(dead_code)]
 pub fn get_first_quarter_moon(lunation_number: f64) -> i64 {
-    get_moon_phase(1, lunation_number)
+    get_time_of(MoonPhase::FirstQuarterMoon, lunation_number)
 }
 
 #[allow(dead_code)]
 pub fn get_full_moon(lunation_number: f64) -> i64 {
-    get_moon_phase(2, lunation_number)
+    get_time_of(MoonPhase::FullMoon, lunation_number)
 }
 
 #[allow(dead_code)]
 pub fn get_last_quarter_moon(lunation_number: f64) -> i64 {
-    get_moon_phase(3, lunation_number)
+    get_time_of(MoonPhase::LastQuarterMoon, lunation_number)
 }
 
 #[allow(dead_code)]
