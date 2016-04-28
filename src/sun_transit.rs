@@ -95,12 +95,17 @@ fn event_equation(event: Event, timestamp: i64, longitude: f64, latitude: f64, a
           + sin_deg(3.0 * m) * (0.000_289);
 
     let (nl, no) = nutation(t);
+
+    // Mean obliquity of the eliptic
+    // (ε0)
     let e0 = mean_obliquity_eliptic(t);
 
     // True obliquity of the eliptic
+    // (ε)
     let ep = e0 + no;
 
     // Geometric mean longitude
+    // (L0)
     let l0 = 280.466_4567 + 360_007.698_2779 * r
            + 0.030_320_28 * r.powi(2)
            + r.powi(3) / 49931.0
@@ -121,9 +126,16 @@ fn event_equation(event: Event, timestamp: i64, longitude: f64, latitude: f64, a
     let p = 125.04 - 1934.136 * t;
     let l = o - 0.00569 - 0.00478 * sin_deg(p);
 
-    //let a = atan2_deg(cos_deg(ep) * sin_deg(o), cos_deg(o));
 
-    // Apparent
+    // Right ascension
+    // (α)
+    // let a = atan2_deg(cos_deg(ep) * sin_deg(o), cos_deg(o));
+
+    // Apparent right ascension
+    // (α)
+    // NOTE: To compute the apparent right ascension, the true longitude
+    // is replaced by the apparent longitude and a term is added to the
+    // true obliquity.
     let ep = ep + 0.00256 * cos_deg(p);
     let a = atan2_deg(cos_deg(ep) * sin_deg(l), cos_deg(l));
     let a = modulo(a, 360.0);
@@ -138,10 +150,16 @@ fn event_equation(event: Event, timestamp: i64, longitude: f64, latitude: f64, a
     let m0 = modulo(m0, 1.0);
     */
 
-    let l0 = modulo(l0, 360.0);
+    let l0 = modulo(l0, 360.0); // FIXME: Move that above?
 
     // Equation of time
-    let eot = l0 - 0.005_7183 - a + nl * cos_deg(ep); // FIXME
+    let eot = l0 - 0.005_7183 - a + nl * cos_deg(ep);
+
+    let transit = (720.0 - 4.0 * (longitude + eot)) / 1440.0;
+    let transit = jd.floor() - 0.5 + transit;
+
+    // NOTE: We can use the following instead
+    // let transit = jd.floor() - 0.5 + m0;
 
     // Ecliptic Longitude
     let ecliptic_longitude = (m + c + 102.9372 + 180.0) % 360.0;
@@ -153,11 +171,6 @@ fn event_equation(event: Event, timestamp: i64, longitude: f64, latitude: f64, a
     let alt = -2.076 * altitude.sqrt() / 60.0;
     let w = acos_deg((sin_deg(alt - 0.83) - sin_deg(latitude) * sin_deg(d)) /
                      (cos_deg(latitude) * cos_deg(d)));
-
-    let transit = (720.0 - 4.0 * (longitude + eot)) / 1440.0;
-
-    let transit = jd.floor() - 0.5 + transit;
-    //let transit = jd.floor() - 0.5 + m0;
 
     match event {
         Event::Rising  => transit - w / 360.0,
