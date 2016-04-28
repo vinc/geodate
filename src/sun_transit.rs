@@ -1,6 +1,7 @@
 use julian::*;
 use math::*;
 
+#[allow(dead_code)]
 #[derive(PartialEq)]
 enum Event { Rising, Transit, Setting }
 
@@ -198,12 +199,14 @@ pub fn get_midnight(timestamp: i64, longitude: f64) -> i64 {
     julian_to_unix(jde - 0.5)
 }
 
+#[allow(dead_code)]
 pub fn get_sunrise(timestamp: i64, longitude: f64, latitude: f64) -> i64 {
     let jde = event_equation(Event::Rising, timestamp, longitude, latitude, 0.0);
 
     julian_to_unix(jde)
 }
 
+#[allow(dead_code)]
 pub fn get_sunset(timestamp: i64, longitude: f64, latitude: f64) -> i64 {
     let jde = event_equation(Event::Setting, timestamp, longitude, latitude, 0.0);
 

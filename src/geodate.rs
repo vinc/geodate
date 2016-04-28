@@ -100,11 +100,11 @@ mod tests {
     #[test]
     fn get_solar_date_test() {
         // Stonehenge coordinates: 51.178844, -1.826189
-        assert_eq!("44:02:00:15:34", get_solar_date(1403322675, -1.826189));
+        assert_eq!("44:02:00:15:42", get_solar_date(1403322675, -1.826189));
     }
 
     #[test]
     fn get_lunisolar_date_test() {
-        assert_eq!("14:03:03:71:54", get_lunisolar_date(449947500, -2.7653));
+        assert_eq!("14:03:03:71:61", get_lunisolar_date(449947500, -2.7653));
     }
 }

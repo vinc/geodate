@@ -44,7 +44,7 @@ Add a timestamp to have the date of a particular moment (here it's during the
 sunrise on the day of the summer solstice at Stonehenge):
 
     $ geodate 51.178844 -1.826189 1403322675
-    44:05:24:15:34
+    44:05:24:15:42
 
 
 License
