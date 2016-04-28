@@ -17,11 +17,10 @@ enum MoonPhase {
 // From "Astronomical Algorithms"
 // By Jean Meeus
 fn get_time_of(phase: MoonPhase, lunation_number: f64) -> i64 {
-    //let y = 1970.0 + (timestamp as f64) / 86400.0 / 365.25;
-    //let k = ((y - 2000.0) * 12.3685).floor();
     let k = lunation_number;
     let t = k / 1236.85;
 
+    // FIXME: Use that?
     // k + 0.25 => first quarter
     // k + 0.50 => full moon
     // k + 0.75 => last quarter
@@ -170,16 +169,6 @@ fn get_time_of(phase: MoonPhase, lunation_number: f64) -> i64 {
         acc + num_cors[i][j] * e.powi(pow_cors[i][j]) * sin_deg(sin_cor)
     });
 
-    //println!("DEBUG: k   = {:>13.5}", k);
-    //println!("DEBUG: t   = {:>13.5}", t);
-    //println!("DEBUG: e   = {:>13.5}", e);
-    //println!("DEBUG: s  = {:>13.5}", s);
-    //println!("DEBUG: m  = {:>13.5}", m);
-    //println!("DEBUG: f   = {:>13.5}", f);
-    //println!("DEBUG: o   = {:>13.5}", o);
-    //println!("DEBUG: jde = {:>13.5}", jde);
-    //println!("DEBUG: cor = {:>13.5}", cor);
-
     // Additional corrections for quarters
     let w = 0.00306
           - 0.00038 * e * cos_deg(s)
@@ -211,14 +200,8 @@ fn get_time_of(phase: MoonPhase, lunation_number: f64) -> i64 {
             + 0.000_035 * sin_deg(239.56 + 25.513_099 * k)
             + 0.000_023 * sin_deg(331.55 +  3.592_518 * k);
 
-    //println!("DEBUG: w   = {:>13.5}", w);
-    //println!("DEBUG: add = {:>13.5}", add);
-
     let jde = jde + cor + add;
 
-    //println!("DEBUG: jde = {:>13.5}", jde);
-    //println!("DEBUG: k={}, jde={}", k, jde);
-    
     terrestrial_to_universal_time(julian_to_unix(jde))
 }
 
@@ -268,7 +251,7 @@ mod tests {
     #[test]
     fn get_last_quarter_moon_test() {
         // Example 49.b from "Astronomical Algoritms"
-        // New Moon: 2044-01-21 23:48:17 TD
+        // Last Quarter Moon: 2044-01-21 23:48:17 TD
         let lunation_number = 544.75;
         let t = terrestrial_to_universal_time(2337032897);
         assert_eq!(t, get_last_quarter_moon(lunation_number));
