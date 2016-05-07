@@ -8,6 +8,7 @@ macro_rules! assert_approx_eq {
     })
 }
 
+#[allow(dead_code)]
 pub fn parse_time(iso: &str) -> i64 {
     time::strptime(iso, "%FT%T%z").unwrap().to_timespec().sec
 }

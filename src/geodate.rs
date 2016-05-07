@@ -17,15 +17,20 @@ pub fn get_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) -> Str
     let n = 2 + (now / 86400 / 365) as usize;
     let k = if use_solar_calendar { 4 } else { 1 }; // Nb of events per year
     let mut seasonal_events = (1 * k .. n * k).map(|i| {
-        // FIXME: Avoid bugs by picking a date around the middle of the year
+        // Approximate time of the next new year
         let new_year_timestamp = ((i / k) as f64 * 86400.0 * 365.25) as i64;
+
+        // Arbitrary time half a year before that
         let mid_year_timestamp = new_year_timestamp - 180 * 86400;
 
+        // Accurate time of the previous new year
+        let new_year_timestamp = get_previous_december_solstice(mid_year_timestamp);
+
         match (i % k) + 4 - k {
-            0 => get_march_equinox(mid_year_timestamp),     // only if use_solar_calendar
-            1 => get_june_solstice(mid_year_timestamp),     // only if use_solar_calendar
-            2 => get_september_equinox(mid_year_timestamp), // only if use_solar_calendar
-            3 => get_december_solstice(mid_year_timestamp),
+            0 => get_next_march_equinox(new_year_timestamp),     // only if use_solar_calendar
+            1 => get_next_june_solstice(new_year_timestamp),     // only if use_solar_calendar
+            2 => get_next_september_equinox(new_year_timestamp), // only if use_solar_calendar
+            3 => get_next_december_solstice(new_year_timestamp),
             _ => unreachable!()
         }
     });

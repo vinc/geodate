@@ -84,21 +84,61 @@ fn get_periodic_terms(t: f64) -> f64 {
     })
 }
 
-pub fn get_march_equinox(timestamp: i64) -> i64 {
-    get_time_of(Event::MarchEquinox, timestamp)
+#[allow(dead_code)]
+fn get_previous_time_of(event: Event, timestamp: i64) -> i64 {
+    let time_of_event = get_time_of(event, timestamp);
+    if time_of_event >= time_of_event {
+        let delta = (365.25 * 86400.0) as i64;
+        get_time_of(event, timestamp - delta)
+    } else {
+        time_of_event
+    }
 }
 
-pub fn get_june_solstice(timestamp: i64) -> i64 {
-    get_time_of(Event::JuneSolstice, timestamp)
+fn get_next_time_of(event: Event, timestamp: i64) -> i64 {
+    let time_of_event = get_time_of(event, timestamp);
+    if time_of_event <= timestamp {
+        let delta = (365.25 * 86400.0) as i64;
+        get_time_of(event, timestamp + delta)
+    } else {
+        time_of_event
+    }
 }
 
-pub fn get_september_equinox(timestamp: i64) -> i64 {
-    get_time_of(Event::SeptemberEquinox, timestamp)
+#[allow(dead_code)]
+pub fn get_previous_march_equinox(timestamp: i64) -> i64 {
+    get_previous_time_of(Event::MarchEquinox, timestamp)
 }
 
+pub fn get_next_march_equinox(timestamp: i64) -> i64 {
+    get_next_time_of(Event::MarchEquinox, timestamp)
+}
 
-pub fn get_december_solstice(timestamp: i64) -> i64 {
-    get_time_of(Event::DecemberSolstice, timestamp)
+#[allow(dead_code)]
+pub fn get_previous_june_solstice(timestamp: i64) -> i64 {
+    get_previous_time_of(Event::JuneSolstice, timestamp)
+}
+
+pub fn get_next_june_solstice(timestamp: i64) -> i64 {
+    get_next_time_of(Event::JuneSolstice, timestamp)
+}
+
+#[allow(dead_code)]
+pub fn get_previous_september_equinox(timestamp: i64) -> i64 {
+    get_previous_time_of(Event::SeptemberEquinox, timestamp)
+}
+
+pub fn get_next_september_equinox(timestamp: i64) -> i64 {
+    get_next_time_of(Event::SeptemberEquinox, timestamp)
+}
+
+#[allow(dead_code)]
+pub fn get_previous_december_solstice(timestamp: i64) -> i64 {
+    get_previous_time_of(Event::DecemberSolstice, timestamp)
+}
+
+pub fn get_next_december_solstice(timestamp: i64) -> i64 {
+    get_next_time_of(Event::DecemberSolstice, timestamp)
 }
 
 #[cfg(test)]
@@ -109,18 +149,40 @@ mod tests {
     use utils::*;
 
     #[test]
-    fn get_june_solstice_test() {
+    fn get_next_june_solstice_test() {
         // Example 27.a from "Astronomical Algoritms"
         // June Solstice: 1962-06-21 21:25:08 TD
         let t = terrestrial_to_universal_time(parse_time("1962-06-21T21:25:08+00:00"));
-        assert_eq!(t, get_june_solstice(parse_time("1962-06-01T00:00:00+00:00")));
+        assert_eq!(t, get_next_june_solstice(parse_time("1962-06-01T00:00:00+00:00")));
     }
 
     #[test]
-    fn get_december_solstice_test() {
+    fn get_previous_december_solstice_test() {
         let accuracy = 20; // TODO: Improve accuracy
+        let solstice_december_2012 = parse_time("2012-12-21T11:11:37+0000");
 
-        assert_approx_eq!(1356088297, get_december_solstice(1338508800), accuracy); // 2012
-        assert_approx_eq!(1450759677, get_december_solstice(1451606400), accuracy); // 2015
+        let times = vec![
+            get_previous_december_solstice(parse_time("2014-06-01T00:00:00+0000")),
+            parse_time("2013-06-01T00:00:00+0000"),
+        ];
+
+        for t in times {
+            assert_approx_eq!(solstice_december_2012, get_previous_december_solstice(t), accuracy);
+        }
+    }
+
+    #[test]
+    fn get_next_december_solstice_test() {
+        let accuracy = 20; // TODO: Improve accuracy
+        let solstice_december_2013 = parse_time("2013-12-21T17:11:00+0000");
+
+        let times = vec![
+            get_next_december_solstice(parse_time("2012-06-01T00:00:00+0000")),
+            parse_time("2013-06-01T00:00:00+0000"),
+        ];
+
+        for t in times {
+            assert_approx_eq!(solstice_december_2013, get_next_december_solstice(t), accuracy);
+        }
     }
 }
