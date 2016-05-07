@@ -96,6 +96,7 @@ pub fn get_september_equinox(timestamp: i64) -> i64 {
     get_time_of(Event::SeptemberEquinox, timestamp)
 }
 
+
 pub fn get_december_solstice(timestamp: i64) -> i64 {
     get_time_of(Event::DecemberSolstice, timestamp)
 }
@@ -103,20 +104,23 @@ pub fn get_december_solstice(timestamp: i64) -> i64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     use delta_time::*;
+    use utils::*;
 
     #[test]
     fn get_june_solstice_test() {
         // Example 27.a from "Astronomical Algoritms"
         // June Solstice: 1962-06-21 21:25:08 TD
-        let t = terrestrial_to_universal_time(-237609292);
-        assert_eq!(t, get_june_solstice(-239414400));
+        let t = terrestrial_to_universal_time(parse_time("1962-06-21T21:25:08+00:00"));
+        assert_eq!(t, get_june_solstice(parse_time("1962-06-01T00:00:00+00:00")));
     }
 
-    #[ignore] // TODO: Improve accuracy to run this test
     #[test]
     fn get_december_solstice_test() {
-        assert_eq!(1356088297, get_december_solstice(1338508800)); // 2012
-        assert_eq!(1450759677, get_december_solstice(1451606400)); // 2015
+        let accuracy = 20; // TODO: Improve accuracy
+
+        assert_approx_eq!(1356088297, get_december_solstice(1338508800), accuracy); // 2012
+        assert_approx_eq!(1450759677, get_december_solstice(1451606400), accuracy); // 2015
     }
 }
