@@ -218,23 +218,11 @@ pub fn get_sunset(timestamp: i64, longitude: f64, latitude: f64) -> Option<i64> 
 
 #[cfg(test)]
 mod tests {
-    extern crate time;
-
     use super::*;
-    use math::*;
+
     use julian::*;
-
-    // FIXME: Deduplicate this macro
-    macro_rules! assert_approx_eq {
-        ($a:expr, $b:expr, $e:expr) => ({
-            let (a, b, e) = (&$a, &$b, &$e);
-            assert!((*a - *b).abs() <= *e, "{} is not within {} of {}", *a, *e, *b);
-        })
-    }
-
-    fn parse_time(iso: &str) -> i64 {
-        time::strptime(iso, "%FT%T%z").unwrap().to_timespec().sec
-    }
+    use math::*;
+    use utils::*;
 
     #[test]
     fn nutation_test() {
@@ -282,13 +270,6 @@ mod tests {
         let ep = e0 + no;
 
         assert_approx_eq!(23.440_1443, ep, 0.00001);
-    }
-
-    #[ignore] // TODO: Check if bug is resolved in `time` crate
-    #[test]
-    fn parse_time_test() {
-        assert_eq!(0, parse_time("1970-01-01T00:00:00+00:00"));
-        assert_eq!(0, parse_time("1970-01-01T01:00:00+01:00")); // FIXME: Library bug
     }
 
     #[test]

@@ -2,6 +2,9 @@
 extern crate lazy_static;
 extern crate time;
 
+#[macro_use]
+mod utils;
+
 mod delta_time;
 mod earth_orbit;
 mod geodate;

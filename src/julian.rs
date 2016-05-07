@@ -29,14 +29,6 @@ pub fn unix_to_year(timestamp: i64) -> f64 {
 mod tests {
     use super::*;
 
-    // FIXME: Deduplicate this macro
-    macro_rules! assert_approx_eq {
-        ($a:expr, $b:expr, $e:expr) => ({
-            let (a, b, e) = (&$a, &$b, &$e);
-            assert!((*a - *b).abs() <= *e, "{} is not within {} of {}", *a, *e, *b);
-        })
-    }
-
     #[test]
     fn jde_to_julian_millenia_test() {
         assert_approx_eq!(-0.007_218_343_600, jde_to_julian_millenia(2448908.5), 0.000000000001);
