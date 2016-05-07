@@ -11,7 +11,9 @@ mod moon_phase;
 mod sun_transit;
 
 use geodate::*;
+use sun_transit::*;
 
+use std::collections::BTreeMap;
 use std::env;
 
 fn main() {
@@ -36,8 +38,24 @@ fn main() {
         time::get_time().sec
     };
 
-    // let lat = args[1].parse::<f64>().unwrap();
+    let lat = args[1].parse::<f64>().unwrap();
     let lon = args[2].parse::<f64>().unwrap();
 
-    println!("{}", get_date(now, lon, use_solar_calendar));
+    //println!("{}", get_date(now, lon, use_solar_calendar));
+
+    let mut events = BTreeMap::new();
+
+    events.insert(now, "Current: ");
+
+    if let Some(sunrise) = get_sunrise(now, lon, lat) {
+        events.insert(sunrise, "Sunrise: ");
+    }
+
+    if let Some(sunset) = get_sunset(now, lon, lat) {
+        events.insert(sunset, "Sunset:  ");
+    }
+
+    for (&time, name) in &events {
+        println!("{} {}", name, get_date(time, lon, use_solar_calendar));
+    }
 }

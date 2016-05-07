@@ -10,7 +10,7 @@ enum Event {
     Sunset
 }
 
-fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64, altitude: f64) -> i64 {
+fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64, altitude: f64) -> Option<i64> {
     // Julian day
     let jd = (unix_to_julian(timestamp) + longitude / 360.0 + 0.5).floor();
 
@@ -106,6 +106,10 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64, alti
     let w = acos_deg((sin_deg(alt - 0.83) - sin_deg(latitude) * sin_deg(d)) /
                      (cos_deg(latitude) * cos_deg(d)));
 
+    if (event == Event::Sunrise || event == Event::Sunset) && w.is_nan() {
+        return None
+    }
+
     let jd_event = match event {
         Event::Midnight => transit - 0.5,
         Event::Sunrise  => transit - w / 360.0,
@@ -113,7 +117,7 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64, alti
         Event::Midday   => transit
     };
 
-    julian_to_unix(jd_event)
+    Some(julian_to_unix(jd_event))
 }
 
 pub fn nutation(julian_century: f64) -> (f64, f64) {
@@ -195,20 +199,20 @@ pub fn get_noon(timestamp: i64, longitude: f64) -> i64 {
 
 #[allow(dead_code)]
 pub fn get_midday(timestamp: i64, longitude: f64) -> i64 {
-    get_time_of(Event::Midday, timestamp, longitude, 0.0, 0.0)
+    get_time_of(Event::Midday, timestamp, longitude, 0.0, 0.0).unwrap()
 }
 
 pub fn get_midnight(timestamp: i64, longitude: f64) -> i64 {
-    get_time_of(Event::Midnight, timestamp, longitude, 0.0, 0.0)
+    get_time_of(Event::Midnight, timestamp, longitude, 0.0, 0.0).unwrap()
 }
 
 #[allow(dead_code)]
-pub fn get_sunrise(timestamp: i64, longitude: f64, latitude: f64) -> i64 {
+pub fn get_sunrise(timestamp: i64, longitude: f64, latitude: f64) -> Option<i64> {
     get_time_of(Event::Sunrise, timestamp, longitude, latitude, 0.0)
 }
 
 #[allow(dead_code)]
-pub fn get_sunset(timestamp: i64, longitude: f64, latitude: f64) -> i64 {
+pub fn get_sunset(timestamp: i64, longitude: f64, latitude: f64) -> Option<i64> {
     get_time_of(Event::Sunset, timestamp, longitude, latitude, 0.0)
 }
 
@@ -306,34 +310,46 @@ mod tests {
 
     #[test]
     fn get_sunrise_test() {
+        assert_eq!(None, get_sunrise(parse_time("2010-12-21T12:00:00+00:00"), 0.0, 70.0));
+
         // TODO: Test at latitudes > 70
         // http://www.esrl.noaa.gov/gmd/grad/solcalc/
         let times = vec![
             ("2010-06-21T04:13:15+00:00", "2010-06-21T12:00:00+00:00", 45.0, 0.0),
             ("2010-09-23T05:48:17+00:00", "2010-09-23T12:00:00+00:00", 45.0, 0.0),
-            ("2010-12-21T07:35:09+00:00", "2010-12-21T12:00:00+00:00", 45.0, 0.0)
+            ("2010-12-21T07:35:09+00:00", "2010-12-21T12:00:00+00:00", 45.0, 0.0),
+
+            ("2010-09-23T05:42:18+00:00", "2010-09-23T12:00:00+00:00", 70.0, 0.0)
 
         ];
 
         for (t0, t1, lat, lon) in times {
             // TODO: Improve accuracy
-            assert_approx_eq!(parse_time(t0), get_sunrise(parse_time(t1), lon, lat), 20);
+            let accuracy = if lat > 60.0 { 100 } else { 20 };
+
+            assert_approx_eq!(parse_time(t0), get_sunrise(parse_time(t1), lon, lat).unwrap(), accuracy);
         }
     }
 
     #[test]
     fn get_sunset_test() {
+        assert_eq!(None, get_sunrise(parse_time("2010-12-21T12:00:00+00:00"), 0.0, 70.0));
+
         // TODO: Test at latitudes > 70
         // http://www.esrl.noaa.gov/gmd/grad/solcalc/
         let times = vec![
             ("2010-06-21T19:50:16+00:00", "2010-06-21T12:00:00+00:00", 45.0, 0.0),
             ("2010-09-23T17:56:34+00:00", "2010-09-23T12:00:00+00:00", 45.0, 0.0),
-            ("2010-12-21T16:20:58+00:00", "2010-12-21T12:00:00+00:00", 45.0, 0.0)
+            ("2010-12-21T16:20:58+00:00", "2010-12-21T12:00:00+00:00", 45.0, 0.0),
+
+            ("2010-09-23T18:02:51+00:00", "2010-09-23T12:00:00+00:00", 70.0, 0.0)
         ];
 
         for (t0, t1, lat, lon) in times {
             // TODO: Improve accuracy
-            assert_approx_eq!(parse_time(t0), get_sunset(parse_time(t1), lon, lat), 20);
+            let accuracy = if lat > 60.0 { 100 } else { 20 };
+
+            assert_approx_eq!(parse_time(t0), get_sunset(parse_time(t1), lon, lat).unwrap(), accuracy);
         }
     }
 }
