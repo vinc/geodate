@@ -15,6 +15,7 @@ mod sun_transit;
 
 use geodate::*;
 use sun_transit::*;
+use earth_orbit::*;
 
 use std::collections::BTreeMap;
 use std::env;
@@ -51,7 +52,22 @@ fn main() {
     if print_ephemeris {
         let mut events = BTreeMap::new();
 
+        let day_begin_at = get_midnight(now, lon);
+        let day_end_at = get_midnight(day_begin_at + 86400 + 10000, lon);
+
         events.insert(now, "Current: ");
+        
+        let es = vec![
+            ("Equinox: ", get_next_march_equinox(day_begin_at)),
+            ("Equinox: ", get_next_september_equinox(day_begin_at)),
+            ("Solstice:", get_next_december_solstice(day_begin_at)),
+            ("Solstice:", get_next_june_solstice(day_begin_at))
+        ];
+        for (name, e) in es {
+            if e < day_end_at {
+                events.insert(e, name);
+            }
+        }
 
         if let Some(sunrise) = get_sunrise(now, lon, lat) {
             events.insert(sunrise, "Sunrise: ");
