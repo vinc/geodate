@@ -16,6 +16,7 @@ mod sun_transit;
 use geodate::*;
 use sun_transit::*;
 use earth_orbit::*;
+use moon_phase::*;
 
 use std::collections::BTreeMap;
 use std::env;
@@ -55,13 +56,13 @@ fn main() {
         let day_begin_at = get_midnight(now, lon);
         let day_end_at = get_midnight(day_begin_at + 86400 + 10000, lon);
 
-        events.insert(now, "Current: ");
+        events.insert(now, "Current:            ");
         
         let es = vec![
-            ("Equinox: ", get_next_march_equinox(day_begin_at)),
-            ("Equinox: ", get_next_september_equinox(day_begin_at)),
-            ("Solstice:", get_next_december_solstice(day_begin_at)),
-            ("Solstice:", get_next_june_solstice(day_begin_at))
+            ("Equinox:            ", get_next_march_equinox(day_begin_at)),
+            ("Equinox:            ", get_next_september_equinox(day_begin_at)),
+            ("Solstice:           ", get_next_december_solstice(day_begin_at)),
+            ("Solstice:           ", get_next_june_solstice(day_begin_at))
         ];
         for (name, e) in es {
             if e < day_end_at {
@@ -69,12 +70,25 @@ fn main() {
             }
         }
 
+        let n = get_lunation_number(day_begin_at); // FIXME: Potential bug here
+        let es = vec![
+            ("New Moon:           ", get_new_moon(n)),
+            ("First Quarter Moon: ", get_first_quarter_moon(n + 0.25)),
+            ("Full Moon:          ", get_full_moon(n + 0.50)),
+            ("Last Quarter Moon:  ", get_last_quarter_moon(n + 0.75))
+        ];
+        for (name, e) in es {
+            if day_begin_at < e && e < day_end_at {
+                events.insert(e, name);
+            }
+        }
+
         if let Some(sunrise) = get_sunrise(now, lon, lat) {
-            events.insert(sunrise, "Sunrise: ");
+            events.insert(sunrise, "Sunrise:            ");
         }
 
         if let Some(sunset) = get_sunset(now, lon, lat) {
-            events.insert(sunset, "Sunset:  ");
+            events.insert(sunset, "Sunset:             ");
         }
 
         for (&time, name) in &events {
