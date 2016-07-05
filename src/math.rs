@@ -20,6 +20,10 @@ pub fn sin_deg(num: f64) -> f64 {
     rad(num).sin()
 }
 
+pub fn tan_deg(num: f64) -> f64 {
+    rad(num).tan()
+}
+
 pub fn acos_deg(num: f64) -> f64 {
     deg(num.acos())
 }

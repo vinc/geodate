@@ -11,12 +11,14 @@ mod geodate;
 mod julian;
 mod math;
 mod moon_phase;
+mod moon_transit;
 mod sun_transit;
 
 use geodate::*;
 use sun_transit::*;
 use earth_orbit::*;
 use moon_phase::*;
+use moon_transit::*;
 
 use std::collections::BTreeMap;
 use std::env;
@@ -81,6 +83,22 @@ fn main() {
             if day_begin_at < e && e < day_end_at {
                 events.insert(e, name);
             }
+        }
+
+        let mut moonrise = get_moonrise(now, lon, lat);
+        if moonrise < day_begin_at {
+            moonrise = get_moonrise(now + 86400, lon, lat);
+        }
+        if moonrise < day_end_at {
+            events.insert(moonrise, "Moonrise:           ");
+        }
+
+        let mut moonset = get_moonset(now, lon, lat);
+        if moonset < day_begin_at {
+            moonset = get_moonset(now + 86400, lon, lat);
+        }
+        if moonset < day_end_at {
+            events.insert(moonset,  "Moonset:            ");
         }
 
         if let Some(sunrise) = get_sunrise(now, lon, lat) {
