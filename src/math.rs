@@ -1,3 +1,5 @@
+use std::ops::Div;
+
 use std;
 
 const PI: f64 = std::f64::consts::PI;
@@ -42,6 +44,16 @@ pub fn dec_deg(d: f64, m: f64, s: f64) -> f64 {
 
 pub fn modulo(x: f64, y: f64) -> f64 {
     (y + x % y) % y
+}
+
+pub fn interpolate(y1: f64, y2: f64, y3: f64, n: f64) -> f64 {
+    // From "Astronomical Algorithms" by Jean Meeus
+    // Formula 3.3
+    let a = y2 - y1; // First difference
+    let b = y3 - y2; // First difference
+    let c = b - a;   // Second difference
+
+    y2 + (n.div(2.0)) * (a + b + n * c)
 }
 
 #[cfg(test)]

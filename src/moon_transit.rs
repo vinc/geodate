@@ -1,7 +1,7 @@
 use julian::*;
 use math::*;
 use sun_transit::*;
-//use delta_time::*;
+use delta_time::*;
 
 #[allow(dead_code)]
 #[derive(PartialEq)]
@@ -10,12 +10,9 @@ enum Event {
     Moonset
 }
 
-fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> i64 {
-    // Julian day
-    let jd = (unix_to_julian(timestamp) + longitude / 360.0 + 0.5).floor() - 0.5;
-
+fn get_moon_position(julian_day: f64) -> (f64, f64, f64) {
     // Julian century
-    let t = jde_to_julian_century(jd);
+    let t = jde_to_julian_century(julian_day);
 
     // Mean longitude of the Moon
     // (L')
@@ -26,13 +23,13 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> i
 
     // Mean elongation of the Moon
     // (D)
-    let d = 297.850_1921 + 445_267.1114034 * t
-          - 0.001_8819 * t.powi(2)
-          + t.powi(3) / 545_868.0 - t.powi(4) / 113_065_000.0;
+    let dm = 297.850_1921 + 445_267.1114034 * t
+           - 0.001_8819 * t.powi(2)
+           + t.powi(3) / 545_868.0 - t.powi(4) / 113_065_000.0;
 
     // Sun mean anomaly
     // (M)
-    let sm = 357.529_1092 + 35_999.050_2909 * t
+    let sm = 357.529_1092 + 35_999.050_2909 * t // TODO: rename `sm` to `ms`
            - 0.000_1536 * t.powi(2)
            + t.powi(3) / 24_490_000.0;
 
@@ -53,7 +50,7 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> i
     let lm = modulo(lm, 360.0);
     let sm = modulo(sm, 360.0);
     let mm = modulo(mm, 360.0);
-    let d = modulo(d, 360.0);
+    let dm = modulo(dm, 360.0);
     let f = modulo(f, 360.0);
 
     let a1 = modulo(119.75 + 131.849 * t,     360.0);
@@ -199,8 +196,8 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> i
 
     let e = 1.0 - 0.002_516 * t - 0.000_0074 * t.powi(2);
 
-    for (d_arg, sm_arg, mm_arg, f_arg, sin_arg, cos_arg, sin_arg2) in terms {
-        let arg = d * d_arg
+    for (dm_arg, sm_arg, mm_arg, f_arg, sin_arg, cos_arg, sin_arg2) in terms {
+        let arg = dm * dm_arg
                 + f * f_arg
                 + sm * sm_arg
                 + mm * mm_arg;
@@ -238,7 +235,7 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> i
     let b = eb / 1_000_000.0;
 
     // (Δ)
-    let delta = 385_000.56 + er / 1000.0;
+    let d = 385_000.56 + er / 1000.0;
 
 
     let (nl, no) = nutation(t);
@@ -270,7 +267,7 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> i
     println!("DEBUG: JDE  = {}", jd);
     println!("DEBUG:   T  = {}", t);
     println!("DEBUG:   L' = {}", lm);
-    println!("DEBUG:   D  = {}", d);
+    println!("DEBUG:   D  = {}", dm);
     println!("DEBUG:   M  = {}", sm);
     println!("DEBUG:   M' = {}", mm);
     println!("DEBUG:   F  = {}", f);
@@ -285,22 +282,36 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> i
     println!("");
     println!("DEBUG:   l  = {}", l);
     println!("DEBUG:   b  = {}", b);
-    println!("DEBUG:   d  = {}", delta);
+    println!("DEBUG:   d  = {}", d);
     println!("DEBUG:   ep = {}", ep);
     println!("DEBUG:   a  = {}", a);
     println!("DEBUG:   s  = {}", s);
     */
 
+    (a, s, d)
+}
+
+fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> i64 {
+    // Julian day
+    let jd = (unix_to_julian(timestamp) + longitude / 360.0 + 0.5).floor() - 0.5;
+
+    // Julian century
+    let t = jde_to_julian_century(jd);
+
+    let (a1, s1, _) = get_moon_position(jd - 1.0);
+    let (a2, s2, d) = get_moon_position(jd);
+    let (a3, s3, _) = get_moon_position(jd + 1.0);
+
     // Moon horizontal parallax
-    let p = asin_deg(6378.14 / delta);
+    let p = asin_deg(6378.14 / d);
 
     //let h0 = 0.125; // Low accuracy
     let h0 = 0.7275 * p - dec_deg(0.0, 34.0, 0.0);
 
     // H0
     let hh0_1 = sin_deg(h0);
-    let hh0_2 = sin_deg(latitude) * sin_deg(s); // TODO: Should be between -1..1
-    let hh0 = acos_deg((hh0_1 - hh0_2) / cos_deg(latitude) * cos_deg(s));
+    let hh0_2 = sin_deg(latitude) * sin_deg(s2); // TODO: Should be between -1..1
+    let hh0 = acos_deg((hh0_1 - hh0_2) / cos_deg(latitude) * cos_deg(s2));
     let hh0 = modulo(hh0, 180.0);
     /*
     println!("DEBUG: hh0_2 = {}", hh0_2);
@@ -317,7 +328,7 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> i
             - t.powi(3) / 38_710_000.0;
     let ast = modulo(ast, 360.0);
 
-    let m0 = (a - longitude - ast) / 360.0;
+    let m0 = (a2 - longitude - ast) / 360.0;
 
     let m0 = modulo(m0, 1.0); // Fraction of a day
 
@@ -335,6 +346,21 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> i
 
     // NOTE: In the next calculations we should interpolate α and δ from the
     // previous and the following days.
+    let dt = delta_time(unix_to_year(timestamp));
+    let n = m + dt / 86400.0;
+    let a = interpolate(a1, a2, a3, n);
+    let s = interpolate(s1, s2, s3, n);
+
+    /*
+    println!("");
+    println!("DEBUG: a1 = {}", a1);
+    println!("DEBUG: a2 = {}", a2);
+    println!("DEBUG: a3 = {}", a3);
+
+    println!("DEBUG: dt = {}", dt);
+    println!("DEBUG: n  = {}", n);
+    println!("DEBUG: a  = {}", a);
+    */
 
     // Local hour angle of the Moon
     // (H)
@@ -383,7 +409,7 @@ mod tests {
 
     #[test]
     fn get_moonrise_test() {
-        let accuracy = 2000; // FIXME: Improve accuracy
+        let accuracy = 20; // FIXME: Improve accuracy
         let times = vec![
             ("2015-06-21T09:12:30+00:00", "2015-06-21T12:00:00+00:00", 45.0, 0.0)
             //("1988-03-20T00:00:00+00:00", "1988-03-20T00:00:00+00:00", 71.0833, 42.3333),
