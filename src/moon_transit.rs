@@ -262,32 +262,6 @@ fn get_moon_position(julian_day: f64) -> (f64, f64, f64) {
     let s_x = sin_deg(b) * cos_deg(ep) + cos_deg(b) * sin_deg(ep) * sin_deg(l);
     let s = modulo(asin_deg(s_x), 180.0); // TODO: Verify this modulo
 
-    /*
-    println!("");
-    println!("DEBUG: JDE  = {}", jd);
-    println!("DEBUG:   T  = {}", t);
-    println!("DEBUG:   L' = {}", lm);
-    println!("DEBUG:   D  = {}", dm);
-    println!("DEBUG:   M  = {}", sm);
-    println!("DEBUG:   M' = {}", mm);
-    println!("DEBUG:   F  = {}", f);
-    println!("");
-    println!("DEBUG:  A1  = {}", a1);
-    println!("DEBUG:  A2  = {}", a2);
-    println!("DEBUG:  A3  = {}", a3);
-    println!("DEBUG:   E  = {}", e);
-    println!("DEBUG:  el  = {}", el);
-    println!("DEBUG:  eb  = {}", eb);
-    println!("DEBUG:  er  = {}", er);
-    println!("");
-    println!("DEBUG:   l  = {}", l);
-    println!("DEBUG:   b  = {}", b);
-    println!("DEBUG:   d  = {}", d);
-    println!("DEBUG:   ep = {}", ep);
-    println!("DEBUG:   a  = {}", a);
-    println!("DEBUG:   s  = {}", s);
-    */
-
     (a, s, d)
 }
 
@@ -313,10 +287,6 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> i
     let hh0_2 = sin_deg(latitude) * sin_deg(s2); // TODO: Should be between -1..1
     let hh0 = acos_deg((hh0_1 - hh0_2) / cos_deg(latitude) * cos_deg(s2));
     let hh0 = modulo(hh0, 180.0);
-    /*
-    println!("DEBUG: hh0_2 = {}", hh0_2);
-    println!("DEBUG: hh0   = {}", hh0);
-    */
 
     // Apparent sideral time at 0h Universal Time on day D for the meridian
     // of Greenwich converted into degree.
@@ -351,17 +321,6 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> i
     let a = interpolate(a1, a2, a3, n);
     let s = interpolate(s1, s2, s3, n);
 
-    /*
-    println!("");
-    println!("DEBUG: a1 = {}", a1);
-    println!("DEBUG: a2 = {}", a2);
-    println!("DEBUG: a3 = {}", a3);
-
-    println!("DEBUG: dt = {}", dt);
-    println!("DEBUG: n  = {}", n);
-    println!("DEBUG: a  = {}", a);
-    */
-
     // Local hour angle of the Moon
     // (H)
     let hh = st + longitude - a;
@@ -376,19 +335,6 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> i
     let dm = (h - h0) / (360.0 * cos_deg(s) * cos_deg(latitude) * sin_deg(hh));
 
     let m = m + dm;
-
-    /*
-    println!("");
-    println!("DEBUG: ast  = {}", ast);
-    println!("DEBUG:  st  = {}", st);
-    println!("DEBUG:  hh  = {}", hh);
-    println!("DEBUG:   h  = {}", h);
-    println!("DEBUG:  h0  = {}", h0);
-    println!("DEBUG:  m0  = {}", m0);
-    println!("DEBUG:   m  = {}", m);
-    println!("DEBUG:  dm  = {}", dm);
-    println!("~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    */
 
     //terrestrial_to_universal_time(julian_to_unix(jd + m))
     julian_to_unix(jd + m)
