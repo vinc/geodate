@@ -46,6 +46,27 @@ sunrise on the day of the summer solstice at Stonehenge):
     $ geodate 51.178844 -1.826189 1403322675
     44:05:24:15:42
 
+GeoDate can also be run in ephemeris mode:
+
+    $ geodate --ephem 51.178844 -1.826189 1403322675
+    Moonrise:            44:05:24:01:57
+    Current:             44:05:24:15:42
+    Sunrise:             44:05:24:15:46
+    Solstice:            44:05:24:44:61
+    Moonset:             44:05:24:58:85
+    Sunset:              44:05:24:84:52
+
+
+Algorithms
+----------
+
+GeoDate implements a lot of algorithms described in the book Astronomical
+Algorithms by Jean Meeus to calculate the precise time of any sunrise,
+solstice, and new moon required to create a lunisolar calendar.
+
+Additional astronomical events such as moonrise or equinox are also calculated
+in ephemeris mode.
+
 
 License
 -------
