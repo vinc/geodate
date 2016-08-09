@@ -87,7 +87,7 @@ fn get_periodic_terms(t: f64) -> f64 {
 #[allow(dead_code)]
 fn get_previous_time_of(event: Event, timestamp: i64) -> i64 {
     let time_of_event = get_time_of(event, timestamp);
-    if time_of_event >= time_of_event {
+    if time_of_event >= timestamp {
         let delta = (365.25 * 86400.0) as i64;
         get_time_of(event, timestamp - delta)
     } else {
