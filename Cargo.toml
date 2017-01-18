@@ -4,7 +4,7 @@ description = "Command line tool displaying the time in a new local geocentric d
 version = "0.1.0"
 authors = ["Vincent Ollivier <v@vinc.cc>"]
 repository = "https://github.com/vinc/geodate"
-homepage = "https://vinc.cc/projects/geodate"
+homepage = "https://vinc.cc/projects/geodate.html"
 license = "GPL-3.0+"
 
 [dependencies]
