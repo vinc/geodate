@@ -3,6 +3,7 @@ GeoDate
 
 A command line tool displaying the time in a new local geocentric date format.
 
+
 Synopsis
 ========
 
@@ -13,8 +14,8 @@ Be prepared to forget all about hours and minutes and start using centidays
 instead!
 
 You will also learn to get more in touch with the natural environment with this
-lunisolar calendar. For example the full moon will always be around the
-fourteenth day of every month, easy!
+lunisolar calendar. For example the full moon will always be around the middle
+of every month, easy!
 
 A detailed explanation of the date format is available
 [online](http://files.vinc.cc/calendar.html).
@@ -71,4 +72,5 @@ in ephemeris mode.
 License
 -------
 
-Copyright (C) 2016 Vincent Ollivier. Released under GNU GPL License v3.
+Copyright (c) 2016-2017 Vincent Ollivier.
+Released under the GNU GPL License v3.
