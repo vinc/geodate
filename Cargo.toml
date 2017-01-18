@@ -8,5 +8,5 @@ homepage = "https://vinc.cc/projects/geodate"
 license = "GPL-3.0+"
 
 [dependencies]
-time = "*"
-lazy_static = "*"
+time = "0.1"
+lazy_static = "0.2"
