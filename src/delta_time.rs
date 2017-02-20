@@ -49,7 +49,6 @@ pub fn terrestrial_to_universal_time(timestamp: i64) -> i64 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use julian::*;
 
     macro_rules! assert_approx_eq {
         ($a:expr, $b:expr, $e:expr) => ({

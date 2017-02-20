@@ -144,8 +144,6 @@ pub fn get_next_december_solstice(timestamp: i64) -> i64 {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    use delta_time::*;
     use utils::*;
 
     #[test]

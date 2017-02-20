@@ -219,9 +219,6 @@ pub fn get_sunset(timestamp: i64, longitude: f64, latitude: f64) -> Option<i64> 
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    use julian::*;
-    use math::*;
     use utils::*;
 
     #[test]

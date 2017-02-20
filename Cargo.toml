@@ -7,6 +7,15 @@ repository = "https://github.com/vinc/geodate"
 homepage = "https://vinc.cc/projects/geodate.html"
 license = "GPL-3.0+"
 
+[lib]
+name = "geodate"
+path = "src/lib.rs"
+
+[[bin]]
+name = "geodate"
+path = "src/main.rs"
+doc = false
+
 [dependencies]
 time = "0.1"
 lazy_static = "0.2"

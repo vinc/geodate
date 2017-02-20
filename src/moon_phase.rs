@@ -232,7 +232,6 @@ pub fn get_lunation_number(timestamp: i64) -> f64 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use delta_time::*;
 
     #[test]
     fn get_lunation_number_test() {

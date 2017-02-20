@@ -1,24 +1,11 @@
-#[macro_use]
-extern crate lazy_static;
 extern crate time;
+extern crate geodate;
 
-#[macro_use]
-mod utils;
-
-mod delta_time;
-mod earth_orbit;
-mod geodate;
-mod julian;
-mod math;
-mod moon_phase;
-mod moon_transit;
-mod sun_transit;
-
-use geodate::*;
-use sun_transit::*;
-use earth_orbit::*;
-use moon_phase::*;
-use moon_transit::*;
+use geodate::geodate::*;
+use geodate::sun_transit::*;
+use geodate::earth_orbit::*;
+use geodate::moon_phase::*;
+use geodate::moon_transit::*;
 
 use std::collections::BTreeMap;
 use std::env;
