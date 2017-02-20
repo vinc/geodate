@@ -72,5 +72,4 @@ in ephemeris mode.
 License
 -------
 
-Copyright (c) 2016-2017 Vincent Ollivier.
-Released under the GNU GPL License v3.
+Copyright (c) 2016-2017 Vincent Ollivier. Released under the MIT License.
