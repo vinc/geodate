@@ -1,4 +1,4 @@
-GeoDate
+Geodate
 =======
 
 A command line tool displaying the time in a new local geocentric date format.
@@ -7,7 +7,7 @@ A command line tool displaying the time in a new local geocentric date format.
 Synopsis
 ========
 
-GeoDate displays the current local time in a geocentric date format using a
+Geodate displays the current local time in a geocentric date format using a
 more natural lunisolar calendar with metric time.
 
 Be prepared to forget all about hours and minutes and start using centidays
@@ -47,7 +47,7 @@ sunrise on the day of the summer solstice at Stonehenge):
     $ geodate 51.178844 -1.826189 1403322675
     44:05:24:15:42
 
-GeoDate can also be run in ephemeris mode:
+Geodate can also be run in ephemeris mode:
 
     $ geodate --ephem 51.178844 -1.826189 1403322675
     Moonrise:            44:05:24:01:57
@@ -61,7 +61,7 @@ GeoDate can also be run in ephemeris mode:
 Algorithms
 ----------
 
-GeoDate implements a lot of algorithms described in the book Astronomical
+Geodate implements a lot of algorithms described in the book Astronomical
 Algorithms by Jean Meeus to calculate the precise time of any sunrise,
 solstice, and new moon required to create a lunisolar calendar.
 

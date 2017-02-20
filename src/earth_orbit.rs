@@ -84,7 +84,6 @@ fn get_periodic_terms(t: f64) -> f64 {
     })
 }
 
-#[allow(dead_code)]
 fn get_previous_time_of(event: Event, timestamp: i64) -> i64 {
     let time_of_event = get_time_of(event, timestamp);
     if time_of_event >= timestamp {
@@ -105,7 +104,6 @@ fn get_next_time_of(event: Event, timestamp: i64) -> i64 {
     }
 }
 
-#[allow(dead_code)]
 pub fn get_previous_march_equinox(timestamp: i64) -> i64 {
     get_previous_time_of(Event::MarchEquinox, timestamp)
 }
@@ -114,7 +112,6 @@ pub fn get_next_march_equinox(timestamp: i64) -> i64 {
     get_next_time_of(Event::MarchEquinox, timestamp)
 }
 
-#[allow(dead_code)]
 pub fn get_previous_june_solstice(timestamp: i64) -> i64 {
     get_previous_time_of(Event::JuneSolstice, timestamp)
 }
@@ -123,7 +120,6 @@ pub fn get_next_june_solstice(timestamp: i64) -> i64 {
     get_next_time_of(Event::JuneSolstice, timestamp)
 }
 
-#[allow(dead_code)]
 pub fn get_previous_september_equinox(timestamp: i64) -> i64 {
     get_previous_time_of(Event::SeptemberEquinox, timestamp)
 }
@@ -132,7 +128,6 @@ pub fn get_next_september_equinox(timestamp: i64) -> i64 {
     get_next_time_of(Event::SeptemberEquinox, timestamp)
 }
 
-#[allow(dead_code)]
 pub fn get_previous_december_solstice(timestamp: i64) -> i64 {
     get_previous_time_of(Event::DecemberSolstice, timestamp)
 }

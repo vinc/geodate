@@ -1,7 +1,6 @@
 use julian::*;
 use math::*;
 
-#[allow(dead_code)]
 #[derive(PartialEq)]
 enum Event {
     Midnight,
@@ -192,12 +191,10 @@ pub fn mean_obliquity_eliptic(julian_century: f64) -> f64 {
         + dec_deg(0.0, 0.0, 0.001_813) * t.powi(3)
 }
 
-#[allow(dead_code)]
 pub fn get_noon(timestamp: i64, longitude: f64) -> i64 {
     get_midday(timestamp, longitude)
 }
 
-#[allow(dead_code)]
 pub fn get_midday(timestamp: i64, longitude: f64) -> i64 {
     get_time_of(Event::Midday, timestamp, longitude, 0.0, 0.0).unwrap()
 }
@@ -206,12 +203,10 @@ pub fn get_midnight(timestamp: i64, longitude: f64) -> i64 {
     get_time_of(Event::Midnight, timestamp, longitude, 0.0, 0.0).unwrap()
 }
 
-#[allow(dead_code)]
 pub fn get_sunrise(timestamp: i64, longitude: f64, latitude: f64) -> Option<i64> {
     get_time_of(Event::Sunrise, timestamp, longitude, latitude, 0.0)
 }
 
-#[allow(dead_code)]
 pub fn get_sunset(timestamp: i64, longitude: f64, latitude: f64) -> Option<i64> {
     get_time_of(Event::Sunset, timestamp, longitude, latitude, 0.0)
 }

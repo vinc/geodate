@@ -209,22 +209,19 @@ pub fn get_new_moon(lunation_number: f64) -> i64 {
     get_time_of(MoonPhase::NewMoon, lunation_number)
 }
 
-#[allow(dead_code)]
 pub fn get_first_quarter_moon(lunation_number: f64) -> i64 {
     get_time_of(MoonPhase::FirstQuarterMoon, lunation_number)
 }
 
-#[allow(dead_code)]
 pub fn get_full_moon(lunation_number: f64) -> i64 {
     get_time_of(MoonPhase::FullMoon, lunation_number)
 }
 
-#[allow(dead_code)]
 pub fn get_last_quarter_moon(lunation_number: f64) -> i64 {
     get_time_of(MoonPhase::LastQuarterMoon, lunation_number)
 }
 
-#[allow(dead_code)]
+/// Computes the Lunation Number since the first new moon of 2000
 pub fn get_lunation_number(timestamp: i64) -> f64 {
     ((unix_to_year(timestamp) - 2000.0) * 12.3685).floor()
 }

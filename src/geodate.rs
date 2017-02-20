@@ -2,6 +2,7 @@ use earth_orbit::*;
 use moon_phase::*;
 use sun_transit::*;
 
+/// Constructs a string representing the time in a geodate format
 pub fn get_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) -> String {
     let now = timestamp;
     let lon = longitude;
@@ -88,12 +89,12 @@ pub fn get_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) -> Str
     format!("{:02}:{:02}:{:02}:{:02}:{:02}", y, m, d, c, b)
 }
 
-#[allow(dead_code)]
+/// Constructs a string representing the time in a geodate format with a lunisolar calendar
 pub fn get_lunisolar_date(timestamp: i64, longitude: f64) -> String {
     get_date(timestamp, longitude, false)
 }
 
-#[allow(dead_code)]
+/// Constructs a string representing the time in a geodate format with a solar calendar
 pub fn get_solar_date(timestamp: i64, longitude: f64) -> String {
     get_date(timestamp, longitude, true)
 }

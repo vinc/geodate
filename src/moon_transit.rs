@@ -3,7 +3,6 @@ use math::*;
 use sun_transit::*;
 use delta_time::*;
 
-#[allow(dead_code)]
 #[derive(PartialEq)]
 enum Event {
     Moonrise,
