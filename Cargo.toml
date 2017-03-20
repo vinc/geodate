@@ -1,7 +1,7 @@
 [package]
 name = "geodate"
 description = "Geodate computes a representation of the current local time in a geocentric date format using a more natural lunisolar calendar with metric time"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Vincent Ollivier <v@vinc.cc>"]
 repository = "https://github.com/vinc/geodate"
 homepage = "https://vinc.cc/projects/geodate.html"
