@@ -7,14 +7,6 @@ pub fn get_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) -> Str
     let now = timestamp;
     let lon = longitude;
 
-    let mut tom = now + 86400;
-    let mut mid = get_midnight(now, lon);
-
-    if mid > now {
-      tom = now;
-      mid = get_midnight(now - 86400, lon);
-    }
-
     let n = 2 + (now / 86400 / 365) as usize;
     let k = if use_solar_calendar { 4 } else { 1 }; // Nb of events per year
     let mut seasonal_events = (1 * k .. n * k).map(|i| {
@@ -55,7 +47,15 @@ pub fn get_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) -> Str
       t += 86400;
     }
 
-    while t < mid - 2000 { // Mean solar day approximation
+    let mut midnight = get_midnight(now, lon);
+
+    if midnight > now {
+        midnight -= 86400;
+    } else if midnight < now - 86400 {
+        midnight += 86400;
+    }
+
+    while t < midnight - 2000 { // Mean solar day approximation
         d += 1;
         t += 86400;
         if use_solar_calendar {
@@ -82,7 +82,7 @@ pub fn get_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) -> Str
         }
     }
 
-    let e = (10000 * (now - mid)) / (get_midnight(tom, lon) - mid);
+    let e = (10000 * (now - midnight)) / 86400;
     let c = e / 100;
     let b = e % 100;
 
@@ -102,6 +102,7 @@ pub fn get_solar_date(timestamp: i64, longitude: f64) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use utils::*;
 
     #[test]
     fn get_solar_date_test() {
@@ -111,6 +112,18 @@ mod tests {
 
     #[test]
     fn get_lunisolar_date_test() {
-        assert_eq!("14:03:03:71:61", get_lunisolar_date(449947500, -2.7653));
+        assert_eq!("00:00:00:00:00", get_lunisolar_date(215, 0.0));
+
+        assert_eq!("14:03:03:71:59", get_lunisolar_date(449947500, -2.7653));
+
+        assert_eq!("43:11:28:99:98", get_lunisolar_date(parse_time("2014-01-01T00:03:20+0000"), 0.0));
+        assert_eq!("43:11:28:99:99", get_lunisolar_date(parse_time("2014-01-01T00:03:30+0000"), 0.0));
+        assert_eq!("44:00:00:00:00", get_lunisolar_date(parse_time("2014-01-01T00:03:40+0000"), 0.0));
+
+        // Check bugs fixed by version 0.2.1
+        assert_eq!("46:02:10:49:46", get_lunisolar_date(parse_time("2016-03-19T12:00:00+0000"), 0.0));
+        assert_eq!("46:02:11:80:04", get_lunisolar_date(parse_time("2016-03-20T08:00:00+0000"), 170.0));
+        assert_eq!("30:04:28:99:99", get_lunisolar_date(parse_time("2000-06-01T17:57:50+0000"), 90.0));
+        assert_eq!("30:05:00:00:00", get_lunisolar_date(parse_time("2000-06-01T17:58:00+0000"), 90.0));
     }
 }
