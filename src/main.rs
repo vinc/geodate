@@ -12,18 +12,24 @@ use std::env;
 
 fn main() {
     let mut use_solar_calendar = false;
-    let mut print_ephemeris = false;
+    let mut print_ephemeris    = false;
+    let mut print_version      = false;
 
     let args: Vec<_> = env::args().filter(|arg| {
-        if arg == "--solar" {
-            use_solar_calendar = true
-        }
-        if arg == "--ephem" {
-            print_ephemeris = true
+        match arg.as_ref() {
+            "--solar"   => { use_solar_calendar = true },
+            "--ephem"   => { print_ephemeris    = true },
+            "--version" => { print_version      = true },
+            _           => { }
         }
 
         !arg.starts_with("--")
     }).collect();
+
+    if print_version {
+        println!("geodate {}", String::from("v") + env!("CARGO_PKG_VERSION"));
+        return;
+    }
 
     if args.len() < 3 {
         println!("Usage: geodate [--solar] <latitude> <longitude> [<timestamp>]");
