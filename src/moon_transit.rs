@@ -201,12 +201,12 @@ fn get_moon_position(julian_day: f64) -> (f64, f64, f64) {
                 + sm * sm_arg
                 + mm * mm_arg;
 
-        let cor = match sm_arg {
-            -1.0 => e,
-             1.0 => e,
-            -2.0 => e * e,
-             2.0 => e * e,
-               _ => 1.0
+        let cor = match sm_arg.round() as i64 {
+            -1 => e,
+             1 => e,
+            -2 => e * e,
+             2 => e * e,
+             _ => 1.0
         };
 
         el += sin_arg  * cor * sin_deg(arg);
