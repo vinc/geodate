@@ -18,7 +18,7 @@ lunisolar calendar. For example the full moon will always be around the middle
 of every month, easy!
 
 A detailed explanation of the date format is available
-[online](http://files.vinc.cc/calendar.html).
+[online](https://vinc.cc/essays/geocalendar.html).
 
 
 Installation
