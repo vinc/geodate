@@ -1,6 +1,6 @@
 [package]
 name = "geodate"
-description = "Geodate computes geocentric expressions of points in time using a natural lunisolar calendar with metric time based on multiples of the mean solar day."
+description = "Geodate computes geocentric expressions of points in time using a natural lunisolar calendar with metric time based on decimal fractions of the mean solar day."
 version = "0.2.1"
 authors = ["Vincent Ollivier <v@vinc.cc>"]
 repository = "https://github.com/vinc/geodate"

@@ -1,7 +1,7 @@
 //! Geodate
 //!
 //! Geodate computes geocentric expressions of points in time using
-//! a natural lunisolar calendar with metric time based on multiples
+//! a natural lunisolar calendar with metric time based on decimal fractions
 //! of the mean solar day.
 //!
 //! # Examples

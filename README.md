@@ -8,8 +8,8 @@ Synopsis
 --------
 
 Geodate displays the current local time in a geocentric date format using a
-natural lunisolar calendar with metric time based on multiples of the mean
-solar day.
+natural lunisolar calendar with metric time based on decimal fractions of the
+mean solar day.
 
 Be prepared to forget all about hours and minutes and start using centidays
 instead! For example noon is the middle of the day or 50 centidays after
