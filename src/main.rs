@@ -15,13 +15,15 @@ fn main() {
     let mut use_solar_calendar = false;
     let mut print_ephemeris    = false;
     let mut print_version      = false;
+    let mut print_help         = false;
 
-    let mut args: Vec<_> = env::args().filter(|arg| {
+    let args: Vec<_> = env::args().filter(|arg| {
         match arg.as_ref() {
             "--machine" => { use_machine_format = true },
             "--solar"   => { use_solar_calendar = true },
             "--ephem"   => { print_ephemeris    = true },
             "--version" => { print_version      = true },
+            "--help"    => { print_help         = true },
             _           => { }
         }
 
@@ -33,8 +35,15 @@ fn main() {
         return;
     }
 
-    if args.len() < 3 {
-        println!("Usage: geodate [--solar] <latitude> <longitude> [<timestamp>]");
+    if print_help || args.len() < 3 {
+        println!("Usage: geodate [options] <latitude> <longitude> [<timestamp>]");
+        println!("");
+        println!("Options:");
+        println!("   --machine   use machine format");
+        println!("   --solar     use solar calendar");
+        println!("   --ephem     print ephemeris");
+        println!("   --version   print version");
+        println!("   --help      print help");
         return;
     }
 
