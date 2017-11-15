@@ -1,11 +1,11 @@
 Geodate
 =======
 
-A command line tool displaying the time in a new local geocentric date format.
+A command line tool displaying the time in a local geocentric date format.
 
 
 Synopsis
-========
+--------
 
 Geodate displays the current local time in a geocentric date format using a
 more natural lunisolar calendar with metric time.
@@ -15,7 +15,7 @@ instead!
 
 You will also learn to get more in touch with the natural environment with this
 lunisolar calendar. For example the full moon will always be around the middle
-of every month, easy!
+of every month, easy, just look up in the sky to know the time.
 
 A detailed explanation of the date format is available
 [online](https://vinc.cc/essays/geocalendar.html).
@@ -24,7 +24,15 @@ A detailed explanation of the date format is available
 Installation
 ------------
 
-To install `geodate` from source:
+First you need to install Rust:
+
+    $ curl https://sh.rustup.rs -sSf | sh
+
+Then you can install the latest stable version with cargo:
+
+    $ cargo install geodate
+
+Or the development version by fetching the git repository:
 
     $ git clone git://github.com/vinc/geodate.git
     $ cd geodate
@@ -35,19 +43,19 @@ To install `geodate` from source:
 Usage
 -----
 
-Run this tool with a longitude and a latitude as arguments and you will get
-a local geocentric representation of the time:
+Run this tool with a latitude and a longitude and you will get
+a geocentric expression of the current local time:
 
     $ geodate -46.90 168.12
     45:06:02:52:92
 
-Add a timestamp to have the date of a particular moment (here it's during the
-sunrise on the day of the summer solstice at Stonehenge):
+Add a timestamp to get the date of a particular event (for example at sunrise
+on the day of the summer solstice at Stonehenge):
 
     $ geodate 51.178844 -1.826189 1403322675
     44:05:24:15:42
 
-Geodate can also be run in ephemeris mode:
+Geodate can also be run in ephemeris mode with the `--ephem` flag:
 
     $ geodate --ephem 51.178844 -1.826189 1403322675
     Moonrise:            44:05:24:01:57
@@ -56,6 +64,9 @@ Geodate can also be run in ephemeris mode:
     Solstice:            44:05:24:44:61
     Moonset:             44:05:24:58:85
     Sunset:              44:05:24:84:52
+
+Finally you can always add a `--machine` flag to get a unix timestamp
+instead of the default human format.
 
 
 Algorithms
