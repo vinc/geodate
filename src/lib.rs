@@ -1,7 +1,8 @@
 //! Geodate
 //!
-//! Geodate computes a representation of the current local time in a geocentric
-//! date format using a more natural lunisolar calendar with metric time.
+//! Geodate computes geocentric expressions of points in time using
+//! a natural lunisolar calendar with metric time based on multiples
+//! of the mean solar day.
 //!
 //! # Examples
 //!
