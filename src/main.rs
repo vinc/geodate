@@ -11,12 +11,14 @@ use std::collections::BTreeMap;
 use std::env;
 
 fn main() {
+    let mut use_machine_format = false;
     let mut use_solar_calendar = false;
     let mut print_ephemeris    = false;
     let mut print_version      = false;
 
-    let args: Vec<_> = env::args().filter(|arg| {
+    let mut args: Vec<_> = env::args().filter(|arg| {
         match arg.as_ref() {
+            "--machine" => { use_machine_format = true },
             "--solar"   => { use_solar_calendar = true },
             "--ephem"   => { print_ephemeris    = true },
             "--version" => { print_version      = true },
@@ -103,9 +105,19 @@ fn main() {
         }
 
         for (&time, name) in &events {
-            println!("{} {}", name, get_date(time, lon, use_solar_calendar));
+            let date = if use_machine_format {
+                format!("{}", time)
+            } else {
+                get_date(time, lon, use_solar_calendar)
+            };
+            println!("{} {}", name, date);
         }
     } else {
-        println!("{}", get_date(now, lon, use_solar_calendar));
+        let date = if use_machine_format {
+            format!("{}", now)
+        } else {
+            get_date(now, lon, use_solar_calendar)
+        };
+        println!("{}", date);
     }
 }

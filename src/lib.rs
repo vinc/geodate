@@ -65,6 +65,3 @@ pub mod moon_transit;
 
 /// Computes sunrise, sunset, midnight, and midday times
 pub mod sun_transit;
-
-
-
