@@ -1,19 +1,21 @@
 Geodate
 =======
 
-A command line tool displaying the time in a local geocentric date format.
+A command line tool displaying the time in a geocentric date format.
 
 
 Synopsis
 --------
 
 Geodate displays the current local time in a geocentric date format using a
-more natural lunisolar calendar with metric time.
+natural lunisolar calendar with metric time based on multiples of the mean
+solar day.
 
 Be prepared to forget all about hours and minutes and start using centidays
-instead!
+instead! For example noon is the middle of the day or 50 centidays after
+midnight.
 
-You will also learn to get more in touch with the natural environment with this
+You will also learn to be more in touch with the natural environment with this
 lunisolar calendar. For example the full moon will always be around the middle
 of every month, easy, just look up in the sky to know the time.
 
@@ -43,27 +45,27 @@ Or the development version by fetching the git repository:
 Usage
 -----
 
-Run this tool with a latitude and a longitude and you will get
-a geocentric expression of the current local time:
+Run this tool with a latitude and a longitude and you will get a geocentric
+expression of the current local time:
 
-    $ geodate -46.90 168.12
+    $ geodate -46.8995 168.1269
     45:06:02:52:92
 
 Add a timestamp to get the date of a particular event (for example at sunrise
 on the day of the summer solstice at Stonehenge):
 
-    $ geodate 51.178844 -1.826189 1403322675
+    $ geodate 51.1789 -1.8262 1403322675
     44:05:24:15:42
 
 Geodate can also be run in ephemeris mode with the `--ephem` flag:
 
-    $ geodate --ephem 51.178844 -1.826189 1403322675
+    $ geodate --ephem 51.1789 -1.8262 1403322675
     Moonrise:            44:05:24:01:57
     Current:             44:05:24:15:42
     Sunrise:             44:05:24:15:46
     Solstice:            44:05:24:44:61
-    Moonset:             44:05:24:58:85
-    Sunset:              44:05:24:84:52
+    Moonset:             44:05:24:58:86
+    Sunset:              44:05:24:84:53
 
 Finally you can always add a `--machine` flag to get a unix timestamp
 instead of the default human format.
