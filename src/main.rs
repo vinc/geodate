@@ -47,14 +47,35 @@ fn main() {
         return;
     }
 
+    let lat = args[1].parse::<f64>().unwrap();
+    let lon = args[2].parse::<f64>().unwrap();
+
+    // Convert geodate string back into unix timestamp
+    if args.len() == 4 && args[3].contains(":") {
+        let y = date_year(args[3].clone());
+        let n = date_index(args[3].clone());
+        let mut min = (y - 2) * 365 * 86400;
+        let mut max = (y + 2) * 365 * 86400;
+        loop {
+            let mid = (min + max) / 2;
+            let i = date_index(get_date(mid, lon, use_solar_calendar));
+            if i == n {
+                println!("{}", mid);
+                return;
+            }
+            if i < n {
+                min = mid;
+            } else {
+                max = mid;
+            }
+        }
+    }
+
     let now = if args.len() == 4 {
         args[3].parse::<i64>().unwrap()
     } else {
         time::get_time().sec
     };
-
-    let lat = args[1].parse::<f64>().unwrap();
-    let lon = args[2].parse::<f64>().unwrap();
 
     if print_ephemeris {
         let mut events = BTreeMap::new();
@@ -129,4 +150,19 @@ fn main() {
         };
         println!("{}", date);
     }
+}
+
+// Extract year from a geodate string
+fn date_year(date: String) -> i64 {
+    date.split(":").next().unwrap().parse::<i64>().unwrap()
+}
+
+// Transform a geodate string into an integer for comparison
+fn date_index(date: String) -> i64 {
+    let year = date_year(date.clone());
+    let mut index = date.replace(":", "").parse::<i64>().unwrap();
+    if index < 0 { // Special case for negative years
+        index = (year + 1) * 100_000_000 - (index % 100_000_000);
+    }
+    index
 }
