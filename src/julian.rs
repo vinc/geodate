@@ -28,9 +28,16 @@ pub fn unix_to_year(timestamp: i64) -> f64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use utils::*;
 
     #[test]
     fn jde_to_julian_millenia_test() {
         assert_approx_eq!(-0.007_218_343_600, jde_to_julian_millenia(2448908.5), 0.000000000001);
+    }
+
+    #[test]
+    fn unix_to_year_test() {
+        assert_approx_eq!(1970.99, unix_to_year(parse_time("1970-12-31T23:59:59+00:00")), 0.01);
+        assert_approx_eq!(1971.00, unix_to_year(parse_time("1971-01-01T00:00:00+00:00")), 0.01);
     }
 }
