@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ### Added
+- Add support of geodates older than unix epoch
+- Add option to convert geodate strings back into unix timestamps
 - Add machine flag to CLI to output unix timestamp
+
+### Fixed
+- Fix geodates around unix epoch
+- Fix panic with geodates at the end of the first year after unix epoch
 
 
 ## [0.2.1] - 2017-03-20
