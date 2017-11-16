@@ -226,9 +226,19 @@ pub fn get_lunation_number(timestamp: i64) -> f64 {
     ((unix_to_year(timestamp) - 2000.0) * 12.3685).floor()
 }
 
+pub fn get_next_new_moon(timestamp: i64) -> i64 {
+    let new_moon = get_new_moon(get_lunation_number(timestamp));
+    if new_moon > timestamp {
+        new_moon
+    } else {
+        get_new_moon(get_lunation_number(timestamp) + 1.0)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use utils::*;
 
     #[test]
     fn get_lunation_number_test() {
@@ -242,6 +252,10 @@ mod tests {
         let lunation_number = -283.0;
         let t = terrestrial_to_universal_time(225085062);
         assert_eq!(t, get_new_moon(lunation_number));
+
+        // First new moon of 1970
+        let t = parse_time("1970-01-07T20:35:27+0000");
+        assert_eq!(t, get_new_moon(get_lunation_number(0) + 1.0));
     }
 
     #[test]
