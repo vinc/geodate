@@ -49,26 +49,28 @@ Run this tool with a latitude and a longitude and you will get a geocentric
 expression of the current local time:
 
     $ geodate -46.8995 168.1269
-    45:06:02:52:92
+    01:15:06:02:52:92
 
 Add a timestamp to get the date of a particular event (for example at sunrise
 on the day of the summer solstice at Stonehenge):
 
     $ geodate 51.1789 -1.8262 1403322675
-    44:05:24:15:42
+    01:14:05:24:15:42
 
 Geodate can also be run in ephemeris mode with the `--ephem` flag:
 
     $ geodate --ephem 51.1789 -1.8262 1403322675
-    Moonrise:            44:05:24:01:57
-    Current:             44:05:24:15:42
-    Sunrise:             44:05:24:15:46
-    Solstice:            44:05:24:44:61
-    Moonset:             44:05:24:58:86
-    Sunset:              44:05:24:84:53
+    Moonrise:            01:14:05:24:01:57
+    Current:             01:14:05:24:15:42
+    Sunrise:             01:14:05:24:15:46
+    Solstice:            01:14:05:24:44:61
+    Moonset:             01:14:05:24:58:86
+    Sunset:              01:14:05:24:84:53
 
 Finally you can always add a `--machine` flag to get a unix timestamp
-instead of the default human format.
+instead of the default human format, and `--unix` to change epoch and
+begin to count the years from 1970 like computers do instead of 1900
+which is more in line with what humans are used to.
 
 
 Algorithms
