@@ -12,8 +12,7 @@
 //! let timestamp = 1403322675;
 //! let longitude = -1.826189;
 //!
-//! println!("{}", geodate::get_lunisolar_date(timestamp, longitude));
-//! // 44:05:24:15:42
+//! assert_eq!("01:14:05:24:15:42", geodate::get_date(timestamp, longitude));
 //! ```
 //!
 //! This library also exposes some useful functions implementing algorithms
@@ -30,15 +29,15 @@
 //! let latitude  = 51.178844;
 //!
 //! let solstice = earth_orbit::get_previous_december_solstice(timestamp);
-//! println!("timestamp of previous december solstice: {}", solstice);
+//! assert_eq!(1387645873, solstice);
 //!
 //! if let Some(sunrise) = sun_transit::get_sunrise(timestamp, longitude, latitude) {
-//!     println!("timestamp of sunrise: {}", sunrise);
+//!     assert_eq!(1403322705, sunrise);
 //! }
 //! ```
 //!
-//! Note: some functions available in pair, like `get_*_december_solstice()`
-//! returns the `previous` and `next` events for the given time, while others,
+//! Note: some functions available in pair, for example `get_*_december_solstice()`
+//! return the `previous` and `next` events for the given time, while others,
 //! like `get_sunrise()`, give the event associated with the current implicit
 //! time period (day, month).
 

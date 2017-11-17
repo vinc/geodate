@@ -11,21 +11,20 @@ use std::collections::BTreeMap;
 use std::env;
 
 fn main() {
-    let mut use_machine_format = false;
-    let mut use_solar_calendar = false;
     let mut print_ephemeris    = false;
     let mut print_version      = false;
     let mut print_help         = false;
-    let mut epoch              = Epoch::Gregorian;
+
+    let mut format = String::from("%h:%y:%m:%d:%c:%b");
 
     let args: Vec<_> = env::args().filter(|arg| {
         match arg.as_ref() {
-            "--unix"    => { epoch = Epoch::Unix },
-            "--machine" => { use_machine_format = true },
-            "--solar"   => { use_solar_calendar = true },
-            "--ephem"   => { print_ephemeris    = true },
-            "--version" => { print_version      = true },
-            "--help"    => { print_help         = true },
+            "--machine" => { format = String::from("%u"); },
+            "--solar"   => { format = format.replace("%m", "%s"); },
+            "--unix"    => { format = format.replace("%y", "%u"); },
+            "--ephem"   => { print_ephemeris = true; },
+            "--version" => { print_version = true; },
+            "--help"    => { print_help = true; },
             _           => { }
         }
 
@@ -61,7 +60,7 @@ fn main() {
         let mut max = (y + 2) * 365 * 86400;
         loop {
             let mid = (min + max) / 2;
-            let i = date_index(get_epoch_date(epoch, mid, lon, use_solar_calendar));
+            let i = date_index(get_formatted_date(&format, mid, lon));
             if i == n {
                 println!("{}", mid);
                 return;
@@ -138,19 +137,11 @@ fn main() {
         }
 
         for (&time, name) in &events {
-            let date = if use_machine_format {
-                format!("{}", time)
-            } else {
-                get_epoch_date(epoch, time, lon, use_solar_calendar)
-            };
+            let date = get_formatted_date(&format, time, lon);
             println!("{} {}", name, date);
         }
     } else {
-        let date = if use_machine_format {
-            format!("{}", now)
-        } else {
-            get_epoch_date(epoch, now, lon, use_solar_calendar)
-        };
+        let date = get_formatted_date(&format, now, lon);
         println!("{}", date);
     }
 }
