@@ -17,10 +17,11 @@ pub fn parse_time(iso: &str) -> i64 {
 mod tests {
     use super::*;
 
-    #[ignore] // TODO: Check if bug is resolved in `time` crate
     #[test]
     fn parse_time_test() {
         assert_eq!(0, parse_time("1970-01-01T00:00:00+00:00"));
-        assert_eq!(0, parse_time("1970-01-01T01:00:00+01:00")); // FIXME: Library bug
+        assert_eq!(0, parse_time("1970-01-01T01:00:00+01:00"));
+
+        assert_eq!(-2208988800, parse_time("1900-01-01T00:00:00+00:00"));
     }
 }

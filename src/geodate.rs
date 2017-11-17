@@ -1,21 +1,28 @@
 use earth_orbit::*;
 use moon_phase::*;
 use sun_transit::*;
-use utils::*;
 
-#[repr(u8)]
 #[derive(Clone, Copy)]
 pub enum Epoch {
     Gregorian,
     Unix
 }
 
-#[repr(u8)]
 #[derive(Clone, Copy)]
 pub enum Calendar {
     Lunisolar,
     Solar
 }
+
+static ZEROS: [i64; 6] = [
+               0, // 1970-01-01 | Unix epoch
+
+      -410227200, // 1957-01-01 | The following dates all
+     -1009843200, // 1938-01-01 | occurs on a new moon day,
+     -2208988800, // 1900-01-01 | but we cannot go further
+     -8551872000, // 1699-01-01 | back than 1620 with the
+    -10950249600  // 1623-01-01 | current delta time formula.
+];
 
 /// Get a string representation of a geodate
 ///
@@ -56,18 +63,9 @@ pub fn get_formatted_date(format: &str, timestamp: i64, longitude: f64) -> Strin
         Calendar::Lunisolar
     };
 
-    let zeros = [
-        parse_time("1970-01-01T00:00:00+0000"), // Unix epoch
-        parse_time("1957-01-01T00:00:00+0000"), // The following dates all
-        parse_time("1938-01-01T00:00:00+0000"), // occurs on a new moon day,
-        parse_time("1900-01-01T00:00:00+0000"), // but we cannot go further
-        parse_time("1699-01-01T00:00:00+0000"), // back than 1620 with the
-        parse_time("1623-01-01T00:00:00+0000")  // current delta time formula.
-    ];
-
     let mut first_new_moon = 0;
     let mut zero = 0;
-    for &e in &zeros {
+    for &e in &ZEROS {
         // Pick the nearest zero to shorten calculations
         first_new_moon = get_next_new_moon(e);
         zero = get_midnight(first_new_moon, lon);
@@ -125,8 +123,8 @@ pub fn get_formatted_date(format: &str, timestamp: i64, longitude: f64) -> Strin
     }
 
     let epoch_zero = match epoch {
-        Epoch::Unix      => zeros[0],
-        Epoch::Gregorian => zeros[3]
+        Epoch::Unix      => ZEROS[0],
+        Epoch::Gregorian => ZEROS[3]
     };
 
     y += ((zero - epoch_zero) as f64 / 86400.0 / 365.25).round() as i64;
@@ -165,6 +163,12 @@ pub fn get_date(timestamp: i64, longitude: f64) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use utils::*;
+
+    #[test]
+    fn get_date_test() {
+        assert_eq!("01:14:05:24:15:42", get_date(1403322675, -1.826189));
+    }
 
     #[test]
     fn get_solar_date_test() {
