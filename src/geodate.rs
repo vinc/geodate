@@ -3,12 +3,23 @@ use moon_phase::*;
 use sun_transit::*;
 use utils::*;
 
+#[repr(u8)]
+#[derive(Clone, Copy)]
+pub enum Epoch {
+    Unix,
+    Gregorian
+}
+
 /// Constructs a string representing the time in a geodate format
 pub fn get_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) -> String {
+    get_epoch_date(Epoch::Unix, timestamp, longitude, use_solar_calendar)
+}
+
+pub fn get_epoch_date(epoch: Epoch, timestamp: i64, longitude: f64, use_solar_calendar: bool) -> String {
     let now = timestamp;
     let lon = longitude;
 
-    let epochs = [
+    let zeros = [
         parse_time("1970-01-01T00:00:00+0000"), // Unix epoch
         parse_time("1957-01-01T00:00:00+0000"), // The following dates all
         parse_time("1938-01-01T00:00:00+0000"), // occurs on a new moon day,
@@ -18,22 +29,22 @@ pub fn get_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) -> Str
     ];
 
     let mut first_new_moon = 0;
-    let mut epoch = 0;
-    for &e in &epochs {
-        // Pick the nearest epoch to shorten calculations
+    let mut zero = 0;
+    for &e in &zeros {
+        // Pick the nearest zero to shorten calculations
         first_new_moon = get_next_new_moon(e);
-        epoch = get_midnight(first_new_moon, lon);
-        if epoch < now {
+        zero = get_midnight(first_new_moon, lon);
+        if zero < now {
             break;
         }
     }
-    if now < epoch {
+    if now < zero {
         panic!("too far back in time");
     }
 
-    let mut new_year = get_next_december_solstice(epoch);
+    let mut new_year = get_next_december_solstice(zero);
     let mut new_month = if use_solar_calendar {
-        get_next_march_equinox(epoch)
+        get_next_march_equinox(zero)
     } else {
         get_next_new_moon(first_new_moon)
     };
@@ -48,7 +59,7 @@ pub fn get_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) -> Str
     let mut d = 0;
     let mut m = 0;
     let mut y = 0;
-    let mut t = epoch;
+    let mut t = zero;
     while t < midnight - 2000 { // Mean solar day approximation
         d += 1;
         t += 86400;
@@ -78,11 +89,27 @@ pub fn get_date(timestamp: i64, longitude: f64, use_solar_calendar: bool) -> Str
     let c = e / 100;
     let b = e % 100;
 
-    if epoch < epochs[0] {
-        y += (epoch as f64 / 86400.0 / 365.25).round() as i64;
-        format!("{:03}:{:02}:{:02}:{:02}:{:02}", y, m, d, c, b)
-    } else {
-        format!("{:02}:{:02}:{:02}:{:02}:{:02}", y, m, d, c, b)
+    let epoch_zero = match epoch {
+        Epoch::Unix      => zeros[0],
+        Epoch::Gregorian => zeros[3]
+    };
+
+    y += ((zero - epoch_zero) as f64 / 86400.0 / 365.25).round() as i64;
+    let mut sign = "";
+    if zero < epoch_zero {
+        y = y.abs();
+        sign = "-";
+    }
+
+    match epoch {
+        Epoch::Unix => {
+            format!("{}{:02}:{:02}:{:02}:{:02}:{:02}", sign, y, m, d, c, b)
+        },
+        Epoch::Gregorian => {
+            let h = y / 100;
+            let y = y % 100;
+            format!("{}{:02}:{:02}:{:02}:{:02}:{:02}:{:02}", sign, h, y, m, d, c, b)
+        }
     }
 }
 
@@ -122,6 +149,10 @@ mod tests {
 
         assert_eq!("63:00:00:00:00", get_lunisolar_date(parse_time("2033-01-01T00:03:45+0000"), 0.0));
         assert_eq!("101:00:00:00:00", get_lunisolar_date(parse_time("2071-01-01T00:03:30+0000"), 0.0));
+        assert_eq!("150:00:00:00:00", get_lunisolar_date(parse_time("2120-01-01T00:03:00+0000"), 0.0));
+        assert_eq!("215:00:00:00:00", get_lunisolar_date(parse_time("2185-01-01T00:03:30+0000"), 0.0));
+        assert_eq!("340:00:00:00:00", get_lunisolar_date(parse_time("2310-01-01T00:02:30+0000"), 0.0));
+        assert_eq!("530:00:00:00:00", get_lunisolar_date(parse_time("2500-01-01T00:02:30+0000"), 0.0));
 
         // Check bugs fixed by version 0.2.1
         assert_eq!("46:02:10:49:46", get_lunisolar_date(parse_time("2016-03-19T12:00:00+0000"), 0.0));

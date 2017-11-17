@@ -16,9 +16,11 @@ fn main() {
     let mut print_ephemeris    = false;
     let mut print_version      = false;
     let mut print_help         = false;
+    let mut epoch              = Epoch::Gregorian;
 
     let args: Vec<_> = env::args().filter(|arg| {
         match arg.as_ref() {
+            "--unix"    => { epoch = Epoch::Unix },
             "--machine" => { use_machine_format = true },
             "--solar"   => { use_solar_calendar = true },
             "--ephem"   => { print_ephemeris    = true },
@@ -41,6 +43,7 @@ fn main() {
         println!("Options:");
         println!("   --machine   use machine format");
         println!("   --solar     use solar calendar");
+        println!("   --unix      use unix epoch");
         println!("   --ephem     print ephemeris");
         println!("   --version   print version");
         println!("   --help      print help");
@@ -58,7 +61,7 @@ fn main() {
         let mut max = (y + 2) * 365 * 86400;
         loop {
             let mid = (min + max) / 2;
-            let i = date_index(get_date(mid, lon, use_solar_calendar));
+            let i = date_index(get_epoch_date(epoch, mid, lon, use_solar_calendar));
             if i == n {
                 println!("{}", mid);
                 return;
@@ -138,7 +141,7 @@ fn main() {
             let date = if use_machine_format {
                 format!("{}", time)
             } else {
-                get_date(time, lon, use_solar_calendar)
+                get_epoch_date(epoch, time, lon, use_solar_calendar)
             };
             println!("{} {}", name, date);
         }
@@ -146,7 +149,7 @@ fn main() {
         let date = if use_machine_format {
             format!("{}", now)
         } else {
-            get_date(now, lon, use_solar_calendar)
+            get_epoch_date(epoch, now, lon, use_solar_calendar)
         };
         println!("{}", date);
     }
