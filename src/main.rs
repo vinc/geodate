@@ -148,16 +148,15 @@ fn main() {
 
 // Extract year from a geodate string
 fn date_year(date: String) -> i64 {
-    let parts: Vec<i64> = date.
-        split(":").
-        map(|s| s.parse::<i64>().unwrap()).
-        collect();
+    let parts: Vec<_> = date.split(":").collect();
 
-    match parts.len() {
-        6 => parts[0] * 100 + parts[1],
-        5 => parts[0],
+    let y = match parts.len() {
+        6 => format!("{}{}", parts[0], parts[1]),
+        5 => format!("{}", parts[0]),
         _ => panic!("wrong date format")
-    }
+    };
+
+    y.parse::<i64>().unwrap()
 }
 
 // Transform a geodate string into an integer for comparison
@@ -168,4 +167,32 @@ fn date_index(date: String) -> i64 {
         index = (year + 1) * 100_000_000 - (index % 100_000_000);
     }
     index
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn date_year_test() {
+        assert_eq!(date_year(    "00:00:00:00:00".into()),     0);
+        assert_eq!(date_year(    "02:00:00:00:00".into()),     2);
+        assert_eq!(date_year(    "42:00:00:00:00".into()),    42);
+
+        assert_eq!(date_year(   "-00:00:00:00:00".into()),     0);
+        assert_eq!(date_year(   "-02:00:00:00:00".into()),    -2);
+        assert_eq!(date_year(   "-42:00:00:00:00".into()),   -42);
+
+        assert_eq!(date_year( "00:00:00:00:00:00".into()),     0);
+        assert_eq!(date_year( "00:02:00:00:00:00".into()),     2);
+        assert_eq!(date_year( "00:42:00:00:00:00".into()),    42);
+        assert_eq!(date_year( "03:37:00:00:00:00".into()),   337);
+        assert_eq!(date_year( "13:37:00:00:00:00".into()),  1337);
+
+        assert_eq!(date_year("-00:00:00:00:00:00".into()),     0);
+        assert_eq!(date_year("-00:02:00:00:00:00".into()),    -2);
+        assert_eq!(date_year("-00:42:00:00:00:00".into()),   -42);
+        assert_eq!(date_year("-03:37:00:00:00:00".into()),  -337);
+        assert_eq!(date_year("-13:37:00:00:00:00".into()), -1337);
+    }
 }
