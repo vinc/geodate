@@ -148,7 +148,16 @@ fn main() {
 
 // Extract year from a geodate string
 fn date_year(date: String) -> i64 {
-    date.split(":").next().unwrap().parse::<i64>().unwrap()
+    let parts: Vec<i64> = date.
+        split(":").
+        map(|s| s.parse::<i64>().unwrap()).
+        collect();
+
+    match parts.len() {
+        6 => parts[0] * 100 + parts[1],
+        5 => parts[0],
+        _ => panic!("wrong date format")
+    }
 }
 
 // Transform a geodate string into an integer for comparison
