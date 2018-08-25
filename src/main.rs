@@ -1,5 +1,8 @@
 extern crate time;
+extern crate getopts;
 extern crate geodate;
+
+use getopts::Options;
 
 use geodate::geodate::*;
 use geodate::sun_transit::*;
@@ -11,51 +14,57 @@ use std::collections::BTreeMap;
 use std::env;
 
 fn main() {
-    let mut print_ephemeris    = false;
-    let mut print_version      = false;
-    let mut print_help         = false;
+    let args: Vec<String> = env::args().collect();
+    let mut opts = Options::new();
+    opts.optflag("h", "help",    "print help");
+    opts.optflag("v", "version", "print version");
+    opts.optflag("e", "ephem",   "print ephemeris");
+    opts.optflag("s", "solar",   "use solar calendar");
+    opts.optflag("u", "unix",    "use unix epoch");
+    opts.optflag("m", "machine", "use machine format");
+    opts.optopt("f",  "format",  "use custom format", "<str>");
 
-    let mut format = String::from("%h:%y:%m:%d:%c:%b");
+    let matches = match opts.parse(&args) {
+        Ok(m) => { m }
+        Err(f) => { panic!(f.to_string()) }
+    };
 
-    let args: Vec<_> = env::args().filter(|arg| {
-        match arg.as_ref() {
-            "--machine" => { format = String::from("%u"); },
-            "--solar"   => { format = format.replace("%m", "%s"); },
-            "--unix"    => { format = format.replace("%y", "%u"); },
-            "--ephem"   => { print_ephemeris = true; },
-            "--version" => { print_version = true; },
-            "--help"    => { print_help = true; },
-            _           => { }
-        }
+    if matches.opt_present("h") || matches.free.len() < 3 {
+        let brief = "Usage: geodate [options] <latitude> <longitude> [<timestamp>]";
+        print!("{}", opts.usage(brief));
+        return;
+    }
 
-        !arg.starts_with("--")
-    }).collect();
-
-    if print_version {
+    if matches.opt_present("v") {
         println!("geodate {}", String::from("v") + env!("CARGO_PKG_VERSION"));
         return;
     }
 
-    if print_help || args.len() < 3 {
-        println!("Usage: geodate [options] <latitude> <longitude> [<timestamp>]");
-        println!("");
-        println!("Options:");
-        println!("   --machine   use machine format");
-        println!("   --solar     use solar calendar");
-        println!("   --unix      use unix epoch");
-        println!("   --ephem     print ephemeris");
-        println!("   --version   print version");
-        println!("   --help      print help");
-        return;
+    let mut format = String::from("%h:%y:%m:%d:%c:%b");
+
+    if matches.opt_present("m") {
+        format = String::from("%u");
     }
 
-    let lat = args[1].parse::<f64>().unwrap();
-    let lon = args[2].parse::<f64>().unwrap();
+    if matches.opt_present("s") {
+        format = format.replace("%m", "%s");
+    }
+
+    if matches.opt_present("u") {
+        format = format.replace("%y", "%u");
+    }
+
+    if matches.opt_present("f") {
+        format = matches.opt_str("f").unwrap();
+    }
+
+    let lat = matches.free[1].parse::<f64>().unwrap();
+    let lon = matches.free[2].parse::<f64>().unwrap();
 
     // Convert geodate string back into unix timestamp
-    if args.len() == 4 && args[3].contains(":") {
-        let y = date_year(args[3].clone());
-        let n = date_index(args[3].clone());
+    if matches.free.len() == 4 && matches.free[3].contains(":") {
+        let y = date_year(matches.free[3].clone());
+        let n = date_index(matches.free[3].clone());
 
         // Approximate timestamps of bounds
         let mut min = (y - 2) * 365 * 86400;
@@ -70,7 +79,7 @@ fn main() {
             518780 // 1970-01-07T00:06:20+0000
         };
         if min < epoch && epoch < max {
-            if args[3].starts_with("-") {
+            if matches.free[3].starts_with("-") {
                 max = epoch - 9;
             } else {
                 min = epoch;
@@ -92,20 +101,20 @@ fn main() {
         }
     }
 
-    let now = if args.len() == 4 {
-        args[3].parse::<i64>().unwrap()
+    let now = if matches.free.len() == 4 {
+        matches.free[3].parse::<i64>().unwrap()
     } else {
         time::get_time().sec
     };
 
-    if print_ephemeris {
+    if matches.opt_present("e") {
         let mut events = BTreeMap::new();
 
         let day_begin_at = get_midnight(now, lon);
         let day_end_at = get_midnight(day_begin_at + 86400 + 10000, lon);
 
         events.insert(now, "Current:            ");
-        
+
         let es = vec![
             ("Equinox:            ", get_next_march_equinox(day_begin_at)),
             ("Equinox:            ", get_next_september_equinox(day_begin_at)),

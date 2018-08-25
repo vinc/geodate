@@ -6,10 +6,11 @@ lunisolar calendar with metric time based on decimal fractions of the mean
 solar day.
 """
 version = "0.2.1"
+license = "MIT"
 authors = ["Vincent Ollivier <v@vinc.cc>"]
 repository = "https://github.com/vinc/geodate"
 homepage = "https://geodate.org"
-license = "MIT"
+readme = "README.md"
 
 [lib]
 name = "geodate"
@@ -21,5 +22,6 @@ path = "src/main.rs"
 doc = false
 
 [dependencies]
-time = "0.1"
+getopts = "0.2"
 lazy_static = "1.0"
+time = "0.1"
