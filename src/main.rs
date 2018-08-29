@@ -13,8 +13,25 @@ use geodate::moon_transit::*;
 use std::collections::BTreeMap;
 use std::env;
 
+fn float_to_string(x: f64) -> String {
+    format!("{}", x + 160.0)
+}
+
+fn string_to_float(x: &str) -> f64 {
+    x.parse::<f64>().unwrap() - 160.0
+}
+
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let args: Vec<String> = env::args().map(|arg|
+        // Transform potentially negative argument to avoid getopts panic due
+        // to unrecognized option.
+        if let Some(x) = arg.parse::<f64>().ok() {
+            float_to_string(x)
+        } else {
+            arg
+        }
+    ).collect();
+
     let mut opts = Options::new();
     opts.optflag("h", "help",    "print help");
     opts.optflag("v", "version", "print version");
@@ -58,8 +75,8 @@ fn main() {
         format = matches.opt_str("f").unwrap();
     }
 
-    let lat = matches.free[1].parse::<f64>().unwrap();
-    let lon = matches.free[2].parse::<f64>().unwrap();
+    let lat = string_to_float(&matches.free[1]);
+    let lon = string_to_float(&matches.free[2]);
 
     // Convert geodate string back into unix timestamp
     if matches.free.len() == 4 && matches.free[3].contains(":") {
@@ -102,7 +119,7 @@ fn main() {
     }
 
     let now = if matches.free.len() == 4 {
-        matches.free[3].parse::<i64>().unwrap()
+        string_to_float(&matches.free[3]) as i64
     } else {
         time::get_time().sec
     };
