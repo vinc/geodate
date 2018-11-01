@@ -125,7 +125,13 @@ pub fn nutation(julian_century: f64) -> (f64, f64) {
     // (T)
     let t = julian_century;
 
-    /*
+    // Mean elongation of the Moon from the Sun
+    // (D)
+    let d = 297.85036
+          + 445_267.111_480 * t
+          - 0.001_9142 * t.powi(2)
+          + t.powi(3) / 189_474.0;
+
     // Mean anomaly of the Sun
     // (M)
     let ms = 357.52_772
@@ -139,46 +145,63 @@ pub fn nutation(julian_century: f64) -> (f64, f64) {
            + 477_198.867_398 * t
            + 0.008_6972 * t.powi(2)
            - t.powi(3) / 56_250.0;
-    */
+
+    // Moon's argument of latitude
+    // (F)
+    let fm = 93.27191
+           + 483_202.017_538 * t
+           - 0.003_6825 * t.powi(2)
+           + t.powi(3) / 327_270.0;
 
     // Longitude of the ascending node of the Moon's mean orbit on the ecliptic
     // (Ω)
-    // NOTE: The terms in T² and T³ are dropped because we are using simplified
-    //       expressions to find Δψ and Δε.
     let pm = 125.04452
-           - 1934.136_261 * t;
-           //+ 0.002_0708 * t.powi(2)
-           //+ t.powi(3) / 450_000.0;
+           - 1934.136_261 * t
+           + 0.002_0708 * t.powi(2)
+           + t.powi(3) / 450_000.0;
 
-    //let ms = modulo(ms, 360.0);
-    //let mm = modulo(mm, 360.0);
+    let d = modulo(d, 360.0);
+    let ms = modulo(ms, 360.0);
+    let mm = modulo(mm, 360.0);
     let pm = modulo(pm, 360.0);
+    let fm = modulo(fm, 360.0);
 
-    // Mean longitude of the Sun
-    // (L)
-    let ls = 280.4665 + 36_000.7698 * t;
-
-    // Mean longitude of the Moon
-    // (L')
-    let lm = 218.3165 + 481_267.8813 * t;
+    let terms = vec![
+        //  D    M    M'   F    Ω      sine coef        cosine coef
+        [ 0.0, 0.0, 0.0, 0.0, 1.0, -171_996.0, -174.2, 92_025.0,  8.9],
+        [-2.0, 0.0, 0.0, 2.0, 2.0,  -13_187.0,   -1.6,   5736.0, -3.1],
+        [ 0.0, 0.0, 0.0, 2.0, 2.0,    -2274.0,   -0.2,    977.0, -0.5],
+        [ 0.0, 0.0, 0.0, 0.0, 2.0,     2062.0,    0.2,   -895.0,  0.5],
+        [ 0.0, 1.0, 0.0, 0.0, 0.0,     1426.0,   -3.4,     54.0, -0.1],
+        [ 0.0, 0.0, 1.0, 0.0, 0.0,      712.0,    0.1,     -7.0,  0.0],
+        [-2.0, 1.0, 0.0, 2.0, 2.0,     -517.0,    1.2,    224.0, -0.6],
+        [ 0.0, 0.0, 0.0, 2.0, 1.0,     -386.0,   -0.4,    200.0,  0.0],
+        [ 0.0, 0.0, 1.0, 2.0, 2.0,     -301.0,    0.0,    129.0, -0.1],
+        [-2.0,-1.0, 0.0, 2.0, 2.0,      217.0,   -0.5,    -95.0,  0.3],
+        [-2.0, 0.0, 1.0, 0.0, 0.0,     -158.0,    0.0,      0.0,  0.0],
+        // TODO Add all terms
+    ];
 
     // Nutation in longitude
-    // Accurate to 0.5"
     // (Δψ)
-    let nl = dec_deg(0.0, 0.0, -17.20) * sin_deg(pm)
-           + dec_deg(0.0, 0.0,  -1.32) * sin_deg(2.0 * ls)
-           + dec_deg(0.0, 0.0,  -0.23) * sin_deg(2.0 * lm)
-           + dec_deg(0.0, 0.0,   0.21) * sin_deg(2.0 * pm);
+    let mut nl = 0.0;
 
     // Nutation in obliquity
-    // Accurate to 0.1"
     // (Δε)
-    let no = dec_deg(0.0, 0.0,  9.20) * cos_deg(pm)
-           + dec_deg(0.0, 0.0,  0.57) * cos_deg(2.0 * ls)
-           + dec_deg(0.0, 0.0,  0.10) * cos_deg(2.0 * lm)
-           + dec_deg(0.0, 0.0, -0.09) * cos_deg(2.0 * pm);
+    let mut no = 0.0;
 
-    (nl, no)
+    for rows in terms {
+        let arg = d * rows[0]
+                + ms * rows[1]
+                + mm * rows[2]
+                + fm * rows[3]
+                + pm * rows[4];
+
+        nl += sin_deg(arg) * (rows[5] + rows[6] * t);
+        no += cos_deg(arg) * (rows[7] + rows[8] * t);
+    }
+
+    (nl * 0.0001 / 3600.0, no * 0.0001 / 3600.0)
 }
 
 pub fn mean_obliquity_eliptic(julian_century: f64) -> f64 {
