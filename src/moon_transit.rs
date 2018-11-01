@@ -229,13 +229,12 @@ fn get_moon_position(julian_day: f64) -> (f64, f64, f64) {
 
     // (λ)
     let l = lm + el / 1_000_000.0;
-    
+
     // (β)
     let b = eb / 1_000_000.0;
 
     // (Δ)
     let d = 385_000.56 + er / 1000.0;
-
 
     let (nl, no) = nutation(t);
 
@@ -254,89 +253,90 @@ fn get_moon_position(julian_day: f64) -> (f64, f64, f64) {
     // (α)
     let a_x = sin_deg(l) * cos_deg(ep) - tan_deg(b) * sin_deg(ep);
     let a_y = cos_deg(l);
-    let a = modulo(atan2_deg(a_x, a_y), 360.0); // TODO: Verify this modulo
+    let a = modulo(atan2_deg(a_x, a_y) + 180.0, 360.0) - 180.0;
 
     // Moon apparent declinaison
     // (δ)
     let s_x = sin_deg(b) * cos_deg(ep) + cos_deg(b) * sin_deg(ep) * sin_deg(l);
-    let s = modulo(asin_deg(s_x), 180.0); // TODO: Verify this modulo
+    let s = modulo(asin_deg(s_x) + 90.0, 180.0) - 90.0;
 
+    // Right ascension, declinaison, distance
     (a, s, d)
 }
 
 fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> i64 {
+    let lon = -longitude; // Longitude of the observer, measured positively west
+    let lat = latitude; // Latitude of the observer, measured positively north
+
     // Julian day
     let jd = (unix_to_julian(timestamp) + longitude / 360.0 + 0.5).floor() - 0.5;
 
-    // Julian century
-    let t = jde_to_julian_century(jd);
-
-    let (a1, s1, _) = get_moon_position(jd - 1.0);
-    let (a2, s2, d) = get_moon_position(jd);
-    let (a3, s3, _) = get_moon_position(jd + 1.0);
+    let (asc1, dec1, _) = get_moon_position(jd - 1.0);
+    let (asc2, dec2, dist) = get_moon_position(jd);
+    let (asc3, dec3, _) = get_moon_position(jd + 1.0);
 
     // Moon horizontal parallax
-    let p = asin_deg(6378.14 / d);
+    let p = asin_deg(6378.14 / dist);
 
+    // Geometric altitude of the center of the body
     //let h0 = 0.125; // Low accuracy
     let h0 = 0.7275 * p - dec_deg(0.0, 34.0, 0.0);
 
     // H0
-    let hh0_1 = sin_deg(h0);
-    let hh0_2 = sin_deg(latitude) * sin_deg(s2); // TODO: Should be between -1..1
-    let hh0 = acos_deg((hh0_1 - hh0_2) / cos_deg(latitude) * cos_deg(s2));
+    let cos_hh0 = (sin_deg(h0) - sin_deg(lat) * sin_deg(dec2))
+                / (cos_deg(lat) * cos_deg(dec2));
+    assert!(-1.0 <= cos_hh0 && cos_hh0 <= 1.0);
+    let hh0 = acos_deg(cos_hh0);
     let hh0 = modulo(hh0, 180.0);
 
-    // Apparent sideral time at 0h Universal Time on day D for the meridian
+    // Julian century
+    let t = jde_to_julian_century(jd);
+
+    // Apparent sidereal time at 0h Universal Time on day D for the meridian
     // of Greenwich converted into degree.
     // (formula 12.3)
     // (Θ0)
-    let ast = 100.460_618_37
+    let ath0 = 100.460_618_37
             + 36_000.770_053_608 * t
             + 0.000_387_933 * t.powi(2)
             - t.powi(3) / 38_710_000.0;
-    let ast = modulo(ast, 360.0);
+    let ath0 = modulo(ath0, 360.0);
 
-    let m0 = (a2 - longitude - ast) / 360.0;
-
+    let m0 = (asc2 + lon - ath0) / 360.0;
     let m0 = modulo(m0, 1.0); // Fraction of a day
 
     let m = match event {
         Event::Moonrise => m0 - hh0 / 360.0,
         Event::Moonset  => m0 + hh0 / 360.0
     };
-
-    //let m = modulo(m, 1.0); // Fraction of a day
+    let m = modulo(m, 1.0); // Fraction of a day
 
     // Sideral time at Greenwich in degree
     // (θ0)
-    let st = ast + 360.985_647 * m;
-    //let st = modulo(st, 360.0); // FIXME: ???
+    let th0 = ath0 + 360.985_647 * m;
+    //let th0 = modulo(th0, 360.0); // FIXME: ???
 
-    // NOTE: In the next calculations we should interpolate α and δ from the
-    // previous and the following days.
+    // Interpolation
     let dt = delta_time(unix_to_year(timestamp));
     let n = m + dt / 86400.0;
-    let a = interpolate(a1, a2, a3, n);
-    let s = interpolate(s1, s2, s3, n);
+    let asc = interpolate(asc1, asc2, asc3, n);
+    let dec = interpolate(dec1, dec2, dec3, n);
 
     // Local hour angle of the Moon
     // (H)
-    let hh = st + longitude - a;
+    let hh = th0 - lon - asc;
     //let hh = modulo(hh, 360.0) - 180.0; // FIXME: ???
 
     // Moon altitude
     // (formula 13.6)
     // (h)
-    let h = asin_deg(sin_deg(latitude) * sin_deg(s) + cos_deg(latitude) * cos_deg(s) * cos_deg(hh));
+    let h = asin_deg(sin_deg(lat) * sin_deg(dec) + cos_deg(lat) * cos_deg(dec) * cos_deg(hh));
 
     // Correction to m in case of rising and setting
-    let dm = (h - h0) / (360.0 * cos_deg(s) * cos_deg(latitude) * sin_deg(hh));
+    let dm = (h - h0)
+           / (360.0 * cos_deg(dec) * cos_deg(lat) * sin_deg(hh));
 
-    let m = m + dm;
-
-    //terrestrial_to_universal_time(julian_to_unix(jd + m))
-    julian_to_unix(jd + m)
+    julian_to_unix(jd + m + dm)
 }
 
 pub fn get_moonrise(timestamp: i64, longitude: f64, latitude: f64) -> i64 {
@@ -353,15 +353,29 @@ mod tests {
     use utils::*;
 
     #[test]
+    fn get_moon_position_test() {
+        let jd = unix_to_julian(parse_time("1992-04-12T00:00:00+00:00"));
+        let (asc, dec, dist) = get_moon_position(jd);
+        assert_approx_eq!(asc, 134.688_470, 0.000_01);
+        assert_approx_eq!(dec, 13.768_368, 0.000_01);
+        assert_approx_eq!(dist, 368_409.7, 0.1);
+    }
+
+    #[test]
     fn get_moonrise_test() {
-        let accuracy = 20; // FIXME: Improve accuracy
+        let accuracy = 30;
         let times = vec![
-            ("2015-06-21T09:12:30+00:00", "2015-06-21T12:00:00+00:00", 45.0, 0.0)
-            //("1988-03-20T00:00:00+00:00", "1988-03-20T00:00:00+00:00", 71.0833, 42.3333),
-            //("1992-04-12T00:00:00+00:00", "1992-04-12T00:00:00+00:00", 45.0, 0.0)
+            ("2000-01-01T01:50:14+00:00", "2000-01-01T12:00:00+00:00", 0.0, 0.0),
+            ("2000-01-01T02:37:20+00:00", "2000-01-01T12:00:00+00:00", 50.0, 0.0),
+            ("2000-01-01T06:06:16+00:00", "2000-01-01T12:00:00+00:00", 50.0, -50.0),
+            ("2000-01-10T10:02:35+00:00", "2000-01-10T12:00:00+00:00", 50.0, 0.0),
+            ("2000-01-11T10:28:45+00:00", "2000-01-11T12:00:00+00:00", 50.0, 0.0),
+            ("2000-01-12T10:52:51+00:00", "2000-01-12T12:00:00+00:00", 50.0, 0.0),
+            ("2015-06-21T09:12:30+00:00", "2015-06-21T12:00:00+00:00", 45.0, 0.0),
+            ("2018-10-24T17:23:19+00:00", "2018-10-24T12:00:00+00:00", 51.17883, -1.82619),
         ];
         for (t0, t1, lat, lon) in times {
-            assert_approx_eq!(parse_time(t0), get_moonrise(parse_time(t1), lon, lat), accuracy);
+            assert_approx_eq!(get_moonrise(parse_time(t1), lon, lat), parse_time(t0), accuracy);
         }
     }
 }
