@@ -157,20 +157,44 @@ fn main() {
             }
         }
 
-        let mut moonrise = get_moonrise(now, lon, lat);
-        if moonrise < day_begin_at {
-            moonrise = get_moonrise(now + 86400, lon, lat);
-        }
-        if moonrise < day_end_at {
-            events.insert(moonrise, "Moonrise:           ");
+        if let Some(moonrise) = get_moonrise(now, lon, lat) {
+            if moonrise < day_begin_at {
+                if let Some(moonrise) = get_moonrise(now + 86400, lon, lat) {
+                    if day_begin_at <= moonrise && moonrise <= day_end_at {
+                        events.insert(moonrise, "Moonrise+1:         ");
+                    } else {
+                        //events.insert(moonrise, "Moonrise +1:        ");
+                    }
+                }
+            } else if moonrise > day_end_at {
+                if let Some(moonrise) = get_moonrise(now - 86400, lon, lat) {
+                    if day_begin_at <= moonrise && moonrise <= day_end_at {
+                        events.insert(moonrise, "Moonrise-1:       ");
+                    } else {
+                        //events.insert(moonrise, "Moonrise -1:        ");
+                    }
+                }
+            } else {
+                events.insert(moonrise, "Moonrise:           ");
+            }
         }
 
-        let mut moonset = get_moonset(now, lon, lat);
-        if moonset < day_begin_at {
-            moonset = get_moonset(now + 86400, lon, lat);
-        }
-        if moonset < day_end_at {
-            events.insert(moonset,  "Moonset:            ");
+        if let Some(moonset) = get_moonset(now, lon, lat) {
+            if moonset < day_begin_at {
+                if let Some(moonset) = get_moonset(now + 86400, lon, lat) {
+                    if day_begin_at <= moonset && moonset <= day_end_at {
+                        events.insert(moonset, "Moonset:            ");
+                    }
+                }
+            } else if moonset > day_end_at {
+                if let Some(moonset) = get_moonset(now - 86400, lon, lat) {
+                    if day_begin_at <= moonset && moonset <= day_end_at {
+                        events.insert(moonset, "Moonset:            ");
+                    }
+                }
+            } else {
+                events.insert(moonset, "Moonset:            ");
+            }
         }
 
         if let Some(sunrise) = get_sunrise(now, lon, lat) {

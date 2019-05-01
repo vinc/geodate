@@ -264,16 +264,22 @@ fn get_moon_position(julian_day: f64) -> (f64, f64, f64) {
     (a, s, d)
 }
 
-fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> i64 {
+fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> Option<i64> {
     let lon = -longitude; // Longitude of the observer, measured positively west
     let lat = latitude; // Latitude of the observer, measured positively north
 
     // Julian day
     let jd = (unix_to_julian(timestamp) + longitude / 360.0 + 0.5).floor() - 0.5;
 
-    let (asc1, dec1, _) = get_moon_position(jd - 1.0);
-    let (asc2, dec2, dist) = get_moon_position(jd);
-    let (asc3, dec3, _) = get_moon_position(jd + 1.0);
+    let (mut asc1, dec1,    _) = get_moon_position(jd - 1.0);
+    let (    asc2, dec2, dist) = get_moon_position(jd);
+    let (mut asc3, dec3,    _) = get_moon_position(jd + 1.0);
+    while asc2 < asc1 {
+        asc1 -= 180.0;
+    }
+    while asc2 > asc3 {
+        asc3 += 180.0;
+    }
 
     // Moon horizontal parallax
     let p = asin_deg(6378.14 / dist);
@@ -285,7 +291,9 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> i
     // H0
     let cos_hh0 = (sin_deg(h0) - sin_deg(lat) * sin_deg(dec2))
                 / (cos_deg(lat) * cos_deg(dec2));
-    assert!(-1.0 <= cos_hh0 && cos_hh0 <= 1.0);
+    if cos_hh0 < -1.0 || cos_hh0 > 1.0 {
+        return None
+    }
     let hh0 = acos_deg(cos_hh0);
     let hh0 = modulo(hh0, 180.0);
 
@@ -336,19 +344,20 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> i
     let dm = (h - h0)
            / (360.0 * cos_deg(dec) * cos_deg(lat) * sin_deg(hh));
 
-    julian_to_unix(jd + m + dm)
+    Some(julian_to_unix(jd + m + dm))
 }
 
-pub fn get_moonrise(timestamp: i64, longitude: f64, latitude: f64) -> i64 {
+pub fn get_moonrise(timestamp: i64, longitude: f64, latitude: f64) -> Option<i64> {
     get_time_of(Event::Moonrise, timestamp, longitude, latitude)
 }
 
-pub fn get_moonset(timestamp: i64, longitude: f64, latitude: f64) -> i64 {
+pub fn get_moonset(timestamp: i64, longitude: f64, latitude: f64) -> Option<i64> {
     get_time_of(Event::Moonset, timestamp, longitude, latitude)
 }
 
 #[cfg(test)]
 mod tests {
+    extern crate time;
     use super::*;
     use utils::*;
 
@@ -363,7 +372,7 @@ mod tests {
 
     #[test]
     fn get_moonrise_test() {
-        let accuracy = 30;
+        let accuracy = 90;
         let times = vec![
             ("2000-01-01T01:50:14+00:00", "2000-01-01T12:00:00+00:00", 0.0, 0.0),
             ("2000-01-01T02:37:20+00:00", "2000-01-01T12:00:00+00:00", 50.0, 0.0),
@@ -371,11 +380,22 @@ mod tests {
             ("2000-01-10T10:02:35+00:00", "2000-01-10T12:00:00+00:00", 50.0, 0.0),
             ("2000-01-11T10:28:45+00:00", "2000-01-11T12:00:00+00:00", 50.0, 0.0),
             ("2000-01-12T10:52:51+00:00", "2000-01-12T12:00:00+00:00", 50.0, 0.0),
+
             ("2015-06-21T09:12:30+00:00", "2015-06-21T12:00:00+00:00", 45.0, 0.0),
             ("2018-10-24T17:23:19+00:00", "2018-10-24T12:00:00+00:00", 51.17883, -1.82619),
+
+            ("2025-10-18T03:27:53+00:00", "2025-10-18T12:00:00+00:00", -4.0, 0.0),
+            ("2025-10-19T04:06:47+00:00", "2025-10-19T12:00:00+00:00", -4.0, 0.0),
+            ("2025-10-20T04:45:16+00:00", "2025-10-20T12:00:00+00:00", -4.0, 0.0),
+            ("2025-10-21T05:24:26+00:00", "2025-10-21T12:00:00+00:00", -4.0, 0.0),
         ];
         for (t0, t1, lat, lon) in times {
-            assert_approx_eq!(get_moonrise(parse_time(t1), lon, lat), parse_time(t0), accuracy);
+            println!();
+            println!("{}", t0);
+            let t = get_moonrise(parse_time(t1), lon, lat).unwrap();
+            let d = time::at(time::Timespec::new(t, 0)).to_utc();
+            println!("{} ({}s)", d.strftime("%FT%T+00:00").unwrap(), t - parse_time(t0));
+            assert_approx_eq!(get_moonrise(parse_time(t1), lon, lat).unwrap(), parse_time(t0), accuracy);
         }
     }
 }
