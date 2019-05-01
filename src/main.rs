@@ -60,7 +60,7 @@ fn main() {
     let mut format = String::from("%h:%y:%m:%d:%c:%b");
 
     if matches.opt_present("m") {
-        format = String::from("%u");
+        format = String::from("%x");
     }
 
     if matches.opt_present("s") {
