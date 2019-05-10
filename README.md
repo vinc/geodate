@@ -87,4 +87,4 @@ in ephemeris mode.
 License
 -------
 
-Copyright (c) 2016-2018 Vincent Ollivier. Released under the MIT License.
+Copyright (c) 2016-2019 Vincent Ollivier. Released under the MIT License.
