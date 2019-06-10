@@ -68,3 +68,6 @@ pub mod sun_transit;
 
 /// Computes ephemeris
 pub mod ephemeris;
+
+/// Reverse a geodate into a timestamp
+pub mod reverse;
