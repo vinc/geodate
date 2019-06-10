@@ -89,14 +89,3 @@ pub fn get_ephemeris(timestamp: i64, longitude: f64, latitude: f64) -> BTreeMap<
 
     events
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use utils::*;
-
-    #[test]
-    fn get_ephemeris_test() {
-        assert_eq!("00:00:00:00:00", get_ephemeris(parse_time("1970-01-07T00:06:15+0000"), 0.0, 0.0));
-    }
-}
