@@ -5,12 +5,8 @@ extern crate geodate;
 use getopts::Options;
 
 use geodate::geodate::*;
-use geodate::sun_transit::*;
-use geodate::earth_orbit::*;
-use geodate::moon_phase::*;
-use geodate::moon_transit::*;
+use geodate::ephemeris::*;
 
-use std::collections::BTreeMap;
 use std::env;
 
 fn encode_float(x: f64) -> String {
@@ -91,85 +87,7 @@ fn main() {
     };
 
     if matches.opt_present("e") {
-        let mut events = BTreeMap::new();
-
-        let day_begin_at = get_midnight(now, lon);
-        let day_end_at = get_midnight(day_begin_at + 86400 + 10000, lon);
-
-        events.insert(now, "Current:            ");
-
-        let es = vec![
-            ("Equinox:            ", get_next_march_equinox(day_begin_at)),
-            ("Equinox:            ", get_next_september_equinox(day_begin_at)),
-            ("Solstice:           ", get_next_december_solstice(day_begin_at)),
-            ("Solstice:           ", get_next_june_solstice(day_begin_at))
-        ];
-        for (name, e) in es {
-            if e < day_end_at {
-                events.insert(e, name);
-            }
-        }
-
-        let n = get_lunation_number(day_begin_at); // FIXME: Potential bug here
-        let es = vec![
-            ("New Moon:           ", get_new_moon(n)),
-            ("First Quarter Moon: ", get_first_quarter_moon(n + 0.25)),
-            ("Full Moon:          ", get_full_moon(n + 0.50)),
-            ("Last Quarter Moon:  ", get_last_quarter_moon(n + 0.75))
-        ];
-        for (name, e) in es {
-            if day_begin_at < e && e < day_end_at {
-                events.insert(e, name);
-            }
-        }
-
-        if let Some(moonrise) = get_moonrise(now, lon, lat) {
-            if moonrise < day_begin_at {
-                if let Some(moonrise) = get_moonrise(now + 86400, lon, lat) {
-                    if day_begin_at <= moonrise && moonrise <= day_end_at {
-                        events.insert(moonrise, "Moonrise+1:         ");
-                    } else {
-                        //events.insert(moonrise, "Moonrise +1:        ");
-                    }
-                }
-            } else if moonrise > day_end_at {
-                if let Some(moonrise) = get_moonrise(now - 86400, lon, lat) {
-                    if day_begin_at <= moonrise && moonrise <= day_end_at {
-                        events.insert(moonrise, "Moonrise-1:       ");
-                    } else {
-                        //events.insert(moonrise, "Moonrise -1:        ");
-                    }
-                }
-            } else {
-                events.insert(moonrise, "Moonrise:           ");
-            }
-        }
-
-        if let Some(moonset) = get_moonset(now, lon, lat) {
-            if moonset < day_begin_at {
-                if let Some(moonset) = get_moonset(now + 86400, lon, lat) {
-                    if day_begin_at <= moonset && moonset <= day_end_at {
-                        events.insert(moonset, "Moonset:            ");
-                    }
-                }
-            } else if moonset > day_end_at {
-                if let Some(moonset) = get_moonset(now - 86400, lon, lat) {
-                    if day_begin_at <= moonset && moonset <= day_end_at {
-                        events.insert(moonset, "Moonset:            ");
-                    }
-                }
-            } else {
-                events.insert(moonset, "Moonset:            ");
-            }
-        }
-
-        if let Some(sunrise) = get_sunrise(now, lon, lat) {
-            events.insert(sunrise, "Sunrise:            ");
-        }
-
-        if let Some(sunset) = get_sunset(now, lon, lat) {
-            events.insert(sunset, "Sunset:             ");
-        }
+        let events = get_ephemeris(now, lon, lat);
 
         for (&time, name) in &events {
             let date = get_formatted_date(&format, time, lon);
