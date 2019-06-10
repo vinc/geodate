@@ -92,7 +92,7 @@ fn main() {
 
         for (&time, name) in &events {
             let date = get_formatted_date(&format, time, lon);
-            println!("{} {}", name, date);
+            println!("{:20} {}", format!("{}:", name), date);
         }
     } else {
         let date = get_formatted_date(&format, now, lon);
