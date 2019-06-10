@@ -80,42 +80,8 @@ fn main() {
 
     // Convert geodate string back into unix timestamp
     if matches.free.len() == 4 && matches.free[3].contains(":") {
-        let y = date_year(matches.free[3].clone());
-        let n = date_index(matches.free[3].clone());
-
-        // Approximate timestamps of bounds
-        let mut min = (y - 2) * 365 * 86400;
-        let mut max = (y + 2) * 365 * 86400;
-        let epoch = if format.contains("%y") {
-            // 1900 - 1970
-            min -= 70 * 365 * 86400;
-            max -= 70 * 365 * 86400;
-
-            -2208988580 // 1900-01-01T00:03:40+0000
-        } else {
-            518780 // 1970-01-07T00:06:20+0000
-        };
-        if min < epoch && epoch < max {
-            if matches.free[3].starts_with("-") {
-                max = epoch - 9;
-            } else {
-                min = epoch;
-            }
-        }
-
-        loop {
-            let mid = (min + max) / 2;
-            let i = date_index(get_formatted_date(&format, mid, lon));
-            if i == n || mid == min || mid == max {
-                println!("{}", mid);
-                return;
-            }
-            if i < n {
-                min = mid;
-            } else {
-                max = mid;
-            }
-        }
+        println!("{}", reverse_date(format, matches.free[3].clone(), lon));
+        return;
     }
 
     let now = if matches.free.len() == 4 {
@@ -236,6 +202,45 @@ fn date_index(date: String) -> i64 {
         index = (year + 0) * 100_000_000 - (index % 100_000_000);
     }
     index
+}
+
+// Reverse a geodate into a timestamp
+fn reverse_date(format: String, date: String, longitude: f64) -> i64 {
+    let y = date_year(date.clone());
+    let n = date_index(date.clone());
+
+    // Approximate timestamps of bounds
+    let mut min = (y - 2) * 365 * 86400;
+    let mut max = (y + 2) * 365 * 86400;
+    let epoch = if format.contains("%y") {
+        // 1900 - 1970
+        min -= 70 * 365 * 86400;
+        max -= 70 * 365 * 86400;
+
+        -2208988580 // 1900-01-01T00:03:40+0000
+    } else {
+        518780 // 1970-01-07T00:06:20+0000
+    };
+    if min < epoch && epoch < max {
+        if date.starts_with("-") {
+            max = epoch - 9;
+        } else {
+            min = epoch;
+        }
+    }
+
+    loop {
+        let mid = (min + max) / 2;
+        let i = date_index(get_formatted_date(&format, mid, longitude));
+        if i == n || mid == min || mid == max {
+            return mid;
+        }
+        if i < n {
+            min = mid;
+        } else {
+            max = mid;
+        }
+    }
 }
 
 #[cfg(test)]
