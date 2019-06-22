@@ -89,7 +89,7 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64, alti
     let eot = l0 - 0.005_7183 - a + nl * cos_deg(ep);
 
     let transit = (720.0 - 4.0 * (longitude + eot)) / 1440.0;
-    let transit = jd.floor() - 0.5 + transit;
+    let transit = jd.floor() + modulo(transit, 1.0) - 0.5;
 
     // NOTE: We can use the following instead
     // let transit = jd.floor() - 0.5 + m0;
@@ -301,6 +301,20 @@ mod tests {
 
         for (t0, t1, _, lon) in times {
             assert_approx_eq!(parse_time(t0), get_noon(parse_time(t1), lon), 1);
+        }
+    }
+
+    #[test]
+    fn get_midnight_test() {
+        // http://www.esrl.noaa.gov/gmd/grad/solcalc/
+        let times = vec![
+            ("2000-01-01T00:03:18+00:00", "2000-01-01T12:00:00+00:00", 45.0, 0.0),
+            ("1973-03-20T00:07:32+00:00", "1973-03-20T12:00:00+00:00", 45.0, 0.0),
+            ("1973-03-21T00:07:15+00:00", "1973-03-21T12:00:00+00:00", 45.0, 0.0),
+        ];
+
+        for (t0, t1, _, lon) in times {
+            assert_approx_eq!(parse_time(t0), get_midnight(parse_time(t1), lon), 1);
         }
     }
 
