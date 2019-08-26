@@ -23,5 +23,5 @@ doc = false
 
 [dependencies]
 getopts = "0.2"
-lazy_static = "1.0"
+lazy_static = "1.4"
 time = "0.1"
