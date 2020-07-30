@@ -1,4 +1,3 @@
-extern crate time;
 
 use std::ops::Rem;
 use math::*;

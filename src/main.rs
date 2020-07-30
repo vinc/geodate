@@ -1,4 +1,3 @@
-extern crate time;
 extern crate getopts;
 extern crate geodate;
 
@@ -9,6 +8,7 @@ use geodate::ephemeris::*;
 use geodate::reverse::*;
 
 use std::env;
+use std::time::SystemTime;
 
 fn encode_float(x: f64) -> String {
     format!("0{}", x)
@@ -84,7 +84,10 @@ fn main() {
     let now = if matches.free.len() == 4 {
         decode_float(&matches.free[3]) as i64
     } else {
-        time::get_time().sec
+        match SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
+            Ok(time) => time.as_secs() as i64,
+            Err(_) => 0
+        }
     };
 
     if matches.opt_present("e") {

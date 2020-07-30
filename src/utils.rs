@@ -1,5 +1,3 @@
-extern crate time;
-
 #[macro_export]
 macro_rules! assert_approx_eq {
     ($a:expr, $b:expr, $e:expr) => ({
@@ -8,7 +6,7 @@ macro_rules! assert_approx_eq {
     })
 }
 
-#[allow(dead_code)]
+#[cfg(test)]
 pub fn parse_time(iso: &str) -> i64 {
     time::strptime(iso, "%FT%T%z").unwrap().to_timespec().sec
 }
