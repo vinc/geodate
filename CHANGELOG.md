@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.4.0] - 2020-07-30
+
+### Added
+- Add function to get the ephemeris of a geodate
+- Add function to reverse a geodate into a timestamp
+
+### Removed
+- Remove time dependency (#22)
+
 ## [0.3.0] - 2019-05-10
 
 ### Added
