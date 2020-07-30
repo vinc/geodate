@@ -390,11 +390,6 @@ mod tests {
             ("2025-10-21T05:24:26+00:00", "2025-10-21T12:00:00+00:00", -4.0, 0.0),
         ];
         for (t0, t1, lat, lon) in times {
-            println!();
-            println!("{}", t0);
-            let t = get_moonrise(parse_time(t1), lon, lat).unwrap();
-            let d = time::at(time::Timespec::new(t, 0)).to_utc();
-            println!("{} ({}s)", d.strftime("%FT%T+00:00").unwrap(), t - parse_time(t0));
             assert_approx_eq!(get_moonrise(parse_time(t1), lon, lat).unwrap(), parse_time(t0), accuracy);
         }
     }
