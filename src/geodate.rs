@@ -86,7 +86,7 @@ pub fn get_formatted_date(format: &str, timestamp: i64, longitude: f64) -> Strin
     let mut midnight = get_midnight(now, lon);
     if midnight > now {
         midnight -= 86400;
-    } else if midnight < now - 86400 {
+    } else if midnight <= now - 86400 {
         midnight += 86400;
     }
 
@@ -239,5 +239,10 @@ mod tests {
         // Bug
         assert_eq!("-30:11:28:99:99", get_formatted_date(format, parse_time("1940-12-28T00:01:39+00:00"), 0.0)); // Unix Epoch
         assert_eq!("-29:00:00:00:00", get_formatted_date(format, parse_time("1940-12-28T00:01:40+00:00"), 0.0)); // Unix Epoch
+
+        // Bug with "50:08:28:100:00" at solar midnight
+        assert_eq!("50:08:27:99:99", get_formatted_date(format, parse_time("2020-09-15T23:55:01+0000"), 0.0));
+        assert_eq!("50:08:28:00:00", get_formatted_date(format, parse_time("2020-09-15T23:55:02+0000"), 0.0));
+        assert_eq!("50:08:28:00:00", get_formatted_date(format, parse_time("2020-09-15T23:55:03+0000"), 0.0));
     }
 }
