@@ -45,7 +45,6 @@
 
 #[macro_use]
 extern crate alloc;
-extern crate lazy_static;
 
 #[macro_use]
 mod utils;
