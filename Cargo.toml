@@ -21,8 +21,12 @@ name = "geodate"
 path = "src/main.rs"
 doc = false
 
+[features]
+bin = ["getopts"]
+default = ["bin"]
+
 [dependencies]
-getopts = "0.2"
+getopts = { version = "0.2", optional = true }
 lazy_static = "1.0"
 
 [dev-dependencies]
