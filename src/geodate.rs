@@ -2,6 +2,10 @@ use earth_orbit::*;
 use moon_phase::*;
 use sun_transit::*;
 
+use alloc::string::String;
+#[cfg(not(feature = "std"))]
+use num_traits::Float;
+
 #[derive(Clone, Copy)]
 pub enum Epoch {
     Gregorian,

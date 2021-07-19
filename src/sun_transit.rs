@@ -1,6 +1,9 @@
 use julian::*;
 use math::*;
 
+#[cfg(not(feature = "std"))]
+use num_traits::Float;
+
 #[derive(PartialEq)]
 enum Event {
     Midnight,

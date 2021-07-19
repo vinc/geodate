@@ -1,8 +1,7 @@
-use std::ops::Div;
-
-use std;
-
-const PI: f64 = std::f64::consts::PI;
+use core::f64::consts::PI;
+use core::ops::Div;
+#[cfg(not(feature = "std"))]
+use num_traits::Float;
 
 // FIXME: Use builtin rust to_radians()
 pub fn rad(num: f64) -> f64 {

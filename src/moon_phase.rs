@@ -1,8 +1,10 @@
-
-use std::ops::Rem;
 use math::*;
 use julian::*;
 use delta_time::*;
+
+use core::ops::Rem;
+#[cfg(not(feature = "std"))]
+use num_traits::Float;
 
 #[repr(usize)]
 #[derive(Clone, Copy)]

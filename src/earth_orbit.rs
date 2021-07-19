@@ -2,6 +2,9 @@ use math::*;
 use julian::*;
 use delta_time::*;
 
+#[cfg(not(feature = "std"))]
+use num_traits::Float;
+
 #[repr(usize)]
 #[derive(Clone, Copy)]
 enum Event {

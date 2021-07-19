@@ -1,5 +1,8 @@
 use geodate::*;
 
+use alloc::string::String;
+use alloc::vec::Vec;
+
 /// Reverse a geodate into a timestamp
 pub fn get_timestamp(format: String, date: String, longitude: f64) -> i64 {
     let y = date_year(date.clone());
