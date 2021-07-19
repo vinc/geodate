@@ -45,6 +45,7 @@
 
 #[macro_use]
 extern crate alloc;
+extern crate num_traits;
 
 #[macro_use]
 mod utils;

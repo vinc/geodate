@@ -1,6 +1,8 @@
 use julian::*;
 use math::*;
 
+use num_traits::Float;
+
 #[derive(PartialEq)]
 enum Event {
     Midnight,

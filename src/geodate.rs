@@ -3,6 +3,7 @@ use moon_phase::*;
 use sun_transit::*;
 
 use alloc::string::String;
+use num_traits::Float;
 
 #[derive(Clone, Copy)]
 pub enum Epoch {

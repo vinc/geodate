@@ -1,5 +1,7 @@
 use julian::*;
 
+use num_traits::Float;
+
 pub fn delta_time(year: f64) -> f64 {
     // From "Polynomial Expressions for Delta T"
     // By Fred Espenak, GSFC Planetary Systems Laboratory
