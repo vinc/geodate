@@ -3,7 +3,9 @@ use earth_orbit::*;
 use moon_phase::*;
 use moon_transit::*;
 
-use std::collections::BTreeMap;
+use alloc::collections::BTreeMap;
+use alloc::string::ToString;
+use alloc::string::String;
 
 /// Get the ephemeris of a geodate
 pub fn get_ephemeris(timestamp: i64, longitude: f64, latitude: f64) -> BTreeMap<i64, String> {

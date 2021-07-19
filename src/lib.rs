@@ -41,6 +41,10 @@
 //! like `get_sunrise()`, give the event associated with the current implicit
 //! time period (day, month).
 
+#![no_std]
+
+#[macro_use]
+extern crate alloc;
 extern crate lazy_static;
 
 #[macro_use]

@@ -1,8 +1,6 @@
-use std::ops::Div;
+use core::ops::Div;
 
-use std;
-
-const PI: f64 = std::f64::consts::PI;
+const PI: f64 = core::f64::consts::PI;
 
 // FIXME: Use builtin rust to_radians()
 pub fn rad(num: f64) -> f64 {
