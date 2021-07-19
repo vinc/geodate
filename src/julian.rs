@@ -1,3 +1,4 @@
+#[cfg(not(feature = "std"))]
 use num_traits::Float;
 
 pub const J2000: f64 = 2451_545.0; // TODO: Add 0.0009 to this value?

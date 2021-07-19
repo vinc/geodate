@@ -3,6 +3,7 @@ use julian::*;
 use delta_time::*;
 
 use core::ops::Rem;
+#[cfg(not(feature = "std"))]
 use num_traits::Float;
 
 #[repr(usize)]

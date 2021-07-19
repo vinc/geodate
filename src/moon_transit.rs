@@ -3,6 +3,7 @@ use math::*;
 use sun_transit::*;
 use delta_time::*;
 
+#[cfg(not(feature = "std"))]
 use num_traits::Float;
 
 #[derive(PartialEq)]

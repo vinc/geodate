@@ -22,9 +22,10 @@ path = "src/main.rs"
 doc = false
 
 [features]
+std = []
 bin = ["getopts"]
 #libm = ["num-traits/libm"]
-default = ["bin"]
+default = ["bin", "std"]
 
 [dependencies]
 getopts = { version = "0.2", optional = true }

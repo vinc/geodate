@@ -1,5 +1,6 @@
 use julian::*;
 
+#[cfg(not(feature = "std"))]
 use num_traits::Float;
 
 pub fn delta_time(year: f64) -> f64 {

@@ -1,5 +1,6 @@
 use core::f64::consts::PI;
 use core::ops::Div;
+#[cfg(not(feature = "std"))]
 use num_traits::Float;
 
 // FIXME: Use builtin rust to_radians()
