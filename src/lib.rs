@@ -7,8 +7,6 @@
 //! # Examples
 //!
 //! ```rust
-//! use geodate::geodate;
-//!
 //! let timestamp = 1403322675;
 //! let longitude = -1.826189;
 //!
@@ -77,3 +75,6 @@ pub mod ephemeris;
 
 /// Reverse a geodate into a timestamp
 pub mod reverse;
+
+pub use geodate::get_date;
+pub use geodate::get_formatted_date;
