@@ -77,7 +77,8 @@ fn main() {
 
     // Convert geodate string back into unix timestamp
     if matches.free.len() == 4 && matches.free[3].contains(":") {
-        println!("{}", get_timestamp(format, matches.free[3].clone(), lon));
+        let date = &matches.free[3];
+        println!("{}", get_timestamp(&format, date, lon));
         return;
     }
 
