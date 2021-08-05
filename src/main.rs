@@ -74,7 +74,7 @@ fn main() {
     // Convert geodate string back into unix timestamp
     if matches.free.len() == 4 && matches.free[3].contains(":") {
         let date = &matches.free[3];
-        println!("{}", geodate::reverse::get_timestamp(&format, date, lon));
+        println!("{}", geodate::reverse::timestamp(&format, date, lon));
         return;
     }
 
@@ -88,14 +88,14 @@ fn main() {
     };
 
     if matches.opt_present("e") {
-        let events = geodate::ephemeris::get_ephemeris(now, lon, lat);
+        let events = geodate::ephemeris::ephemeris(now, lon, lat);
 
         for (&time, name) in &events {
-            let date = geodate::get_formatted_date(&format, time, lon);
+            let date = geodate::formatted_date(&format, time, lon);
             println!("{:20} {}", format!("{}:", name), date);
         }
     } else {
-        let date = geodate::get_formatted_date(&format, now, lon);
+        let date = geodate::formatted_date(&format, now, lon);
         println!("{}", date);
     }
 }

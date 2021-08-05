@@ -3,7 +3,7 @@ use geodate::*;
 use alloc::vec::Vec;
 
 /// Reverse a geodate into a timestamp
-pub fn get_timestamp(format: &str, date: &str, longitude: f64) -> i64 {
+pub fn timestamp(format: &str, date: &str, longitude: f64) -> i64 {
     let y = date_year(date);
     let n = date_index(date);
 
@@ -29,7 +29,7 @@ pub fn get_timestamp(format: &str, date: &str, longitude: f64) -> i64 {
 
     loop {
         let mid = (min + max) / 2;
-        let i = date_index(&get_formatted_date(&format, mid, longitude));
+        let i = date_index(&formatted_date(&format, mid, longitude));
         if i == n || mid == min || mid == max {
             return mid;
         }

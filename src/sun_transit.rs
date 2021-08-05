@@ -12,7 +12,7 @@ enum Event {
     Sunset
 }
 
-fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64, altitude: f64) -> Option<i64> {
+fn time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64, altitude: f64) -> Option<i64> {
     // Julian day
     let jd = (unix_to_julian(timestamp) + longitude / 360.0 + 0.5).floor();
 
@@ -217,24 +217,24 @@ pub fn mean_obliquity_eliptic(julian_century: f64) -> f64 {
         + dec_deg(0.0, 0.0, 0.001_813) * t.powi(3)
 }
 
-pub fn get_noon(timestamp: i64, longitude: f64) -> i64 {
-    get_midday(timestamp, longitude)
+pub fn noon(timestamp: i64, longitude: f64) -> i64 {
+    midday(timestamp, longitude)
 }
 
-pub fn get_midday(timestamp: i64, longitude: f64) -> i64 {
-    get_time_of(Event::Midday, timestamp, longitude, 0.0, 0.0).unwrap()
+pub fn midday(timestamp: i64, longitude: f64) -> i64 {
+    time_of(Event::Midday, timestamp, longitude, 0.0, 0.0).unwrap()
 }
 
-pub fn get_midnight(timestamp: i64, longitude: f64) -> i64 {
-    get_time_of(Event::Midnight, timestamp, longitude, 0.0, 0.0).unwrap()
+pub fn midnight(timestamp: i64, longitude: f64) -> i64 {
+    time_of(Event::Midnight, timestamp, longitude, 0.0, 0.0).unwrap()
 }
 
-pub fn get_sunrise(timestamp: i64, longitude: f64, latitude: f64) -> Option<i64> {
-    get_time_of(Event::Sunrise, timestamp, longitude, latitude, 0.0)
+pub fn sunrise(timestamp: i64, longitude: f64, latitude: f64) -> Option<i64> {
+    time_of(Event::Sunrise, timestamp, longitude, latitude, 0.0)
 }
 
-pub fn get_sunset(timestamp: i64, longitude: f64, latitude: f64) -> Option<i64> {
-    get_time_of(Event::Sunset, timestamp, longitude, latitude, 0.0)
+pub fn sunset(timestamp: i64, longitude: f64, latitude: f64) -> Option<i64> {
+    time_of(Event::Sunset, timestamp, longitude, latitude, 0.0)
 }
 
 #[cfg(test)]
@@ -291,9 +291,9 @@ mod tests {
     }
 
     #[test]
-    fn get_noon_test() {
-        get_noon(parse_time("1992-10-13T00:00:00+00:00"), 0.0);
-        get_noon(parse_time("1992-10-13T00:00:00+00:00"), 174.0);
+    fn noon_test() {
+        noon(parse_time("1992-10-13T00:00:00+00:00"), 0.0);
+        noon(parse_time("1992-10-13T00:00:00+00:00"), 174.0);
 
         // http://www.esrl.noaa.gov/gmd/grad/solcalc/
         let times = vec![
@@ -303,12 +303,12 @@ mod tests {
         ];
 
         for (t0, t1, _, lon) in times {
-            assert_approx_eq!(parse_time(t0), get_noon(parse_time(t1), lon), 1);
+            assert_approx_eq!(parse_time(t0), noon(parse_time(t1), lon), 1);
         }
     }
 
     #[test]
-    fn get_midnight_test() {
+    fn midnight_test() {
         // http://www.esrl.noaa.gov/gmd/grad/solcalc/
         let times = vec![
             ("2000-01-01T00:03:18+00:00", "2000-01-01T12:00:00+00:00", 45.0, 0.0),
@@ -317,13 +317,13 @@ mod tests {
         ];
 
         for (t0, t1, _, lon) in times {
-            assert_approx_eq!(parse_time(t0), get_midnight(parse_time(t1), lon), 1);
+            assert_approx_eq!(parse_time(t0), midnight(parse_time(t1), lon), 1);
         }
     }
 
     #[test]
-    fn get_sunrise_test() {
-        assert_eq!(None, get_sunrise(parse_time("2010-12-21T12:00:00+00:00"), 0.0, 70.0));
+    fn sunrise_test() {
+        assert_eq!(None, sunrise(parse_time("2010-12-21T12:00:00+00:00"), 0.0, 70.0));
 
         // TODO: Test at latitudes > 70
         // http://www.esrl.noaa.gov/gmd/grad/solcalc/
@@ -340,13 +340,13 @@ mod tests {
             // TODO: Improve accuracy
             let accuracy = if lat > 60.0 { 100 } else { 20 };
 
-            assert_approx_eq!(parse_time(t0), get_sunrise(parse_time(t1), lon, lat).unwrap(), accuracy);
+            assert_approx_eq!(parse_time(t0), sunrise(parse_time(t1), lon, lat).unwrap(), accuracy);
         }
     }
 
     #[test]
-    fn get_sunset_test() {
-        assert_eq!(None, get_sunrise(parse_time("2010-12-21T12:00:00+00:00"), 0.0, 70.0));
+    fn sunset_test() {
+        assert_eq!(None, sunrise(parse_time("2010-12-21T12:00:00+00:00"), 0.0, 70.0));
 
         // TODO: Test at latitudes > 70
         // http://www.esrl.noaa.gov/gmd/grad/solcalc/
@@ -362,7 +362,7 @@ mod tests {
             // TODO: Improve accuracy
             let accuracy = if lat > 60.0 { 100 } else { 20 };
 
-            assert_approx_eq!(parse_time(t0), get_sunset(parse_time(t1), lon, lat).unwrap(), accuracy);
+            assert_approx_eq!(parse_time(t0), sunset(parse_time(t1), lon, lat).unwrap(), accuracy);
         }
     }
 }

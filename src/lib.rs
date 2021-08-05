@@ -10,7 +10,7 @@
 //! let timestamp = 1403322675;
 //! let longitude = -1.826189;
 //!
-//! assert_eq!("01:14:05:24:15:42", geodate::get_date(timestamp, longitude));
+//! assert_eq!("01:14:05:24:15:42", geodate::date(timestamp, longitude));
 //! ```
 //!
 //! This library also exposes some useful functions implementing algorithms
@@ -26,17 +26,17 @@
 //! let longitude = -1.826189;
 //! let latitude  = 51.178844;
 //!
-//! let solstice = earth_orbit::get_previous_december_solstice(timestamp);
+//! let solstice = earth_orbit::previous_december_solstice(timestamp);
 //! assert_eq!(1387645873, solstice);
 //!
-//! if let Some(sunrise) = sun_transit::get_sunrise(timestamp, longitude, latitude) {
+//! if let Some(sunrise) = sun_transit::sunrise(timestamp, longitude, latitude) {
 //!     assert_eq!(1403322705, sunrise);
 //! }
 //! ```
 //!
-//! Note: some functions available in pair, for example `get_*_december_solstice()`
+//! Note: some functions available in pair, for example `*_december_solstice()`
 //! return the `previous` and `next` events for the given time, while others,
-//! like `get_sunrise()`, give the event associated with the current implicit
+//! like `sunrise()`, give the event associated with the current implicit
 //! time period (day, month).
 
 #![no_std]
@@ -76,5 +76,5 @@ pub mod ephemeris;
 /// Reverse a geodate into a timestamp
 pub mod reverse;
 
-pub use geodate::get_date;
-pub use geodate::get_formatted_date;
+pub use geodate::date;
+pub use geodate::formatted_date;
