@@ -1,12 +1,11 @@
 use geodate::*;
 
-use alloc::string::String;
 use alloc::vec::Vec;
 
 /// Reverse a geodate into a timestamp
-pub fn get_timestamp(format: String, date: String, longitude: f64) -> i64 {
-    let y = date_year(date.clone());
-    let n = date_index(date.clone());
+pub fn timestamp(format: &str, date: &str, longitude: f64) -> i64 {
+    let y = date_year(date);
+    let n = date_index(date);
 
     // Approximate timestamps of bounds
     let mut min = (y - 2) * 365 * 86400;
@@ -30,7 +29,7 @@ pub fn get_timestamp(format: String, date: String, longitude: f64) -> i64 {
 
     loop {
         let mid = (min + max) / 2;
-        let i = date_index(get_formatted_date(&format, mid, longitude));
+        let i = date_index(&formatted_date(&format, mid, longitude));
         if i == n || mid == min || mid == max {
             return mid;
         }
@@ -43,7 +42,7 @@ pub fn get_timestamp(format: String, date: String, longitude: f64) -> i64 {
 }
 
 // Extract year from a geodate string
-fn date_year(date: String) -> i64 {
+fn date_year(date: &str) -> i64 {
     let parts: Vec<_> = date.split(":").collect();
 
     let y = match parts.len() {
@@ -56,7 +55,7 @@ fn date_year(date: String) -> i64 {
 }
 
 // Transform a geodate string into an integer for comparison
-fn date_index(date: String) -> i64 {
+fn date_index(date: &str) -> i64 {
     let year = date_year(date.clone());
     let mut index = date.replace(":", "").parse::<i64>().unwrap();
     if index < 0 { // Special case for negative years
@@ -71,36 +70,36 @@ mod tests {
 
     #[test]
     fn date_year_test() {
-        assert_eq!(date_year(    "00:00:00:00:00".into()),     0);
-        assert_eq!(date_year(    "02:00:00:00:00".into()),     2);
-        assert_eq!(date_year(    "42:00:00:00:00".into()),    42);
+        assert_eq!(date_year(    "00:00:00:00:00"),     0);
+        assert_eq!(date_year(    "02:00:00:00:00"),     2);
+        assert_eq!(date_year(    "42:00:00:00:00"),    42);
 
-        assert_eq!(date_year(   "-00:00:00:00:00".into()),     0);
-        assert_eq!(date_year(   "-02:00:00:00:00".into()),    -2);
-        assert_eq!(date_year(   "-42:00:00:00:00".into()),   -42);
+        assert_eq!(date_year(   "-00:00:00:00:00"),     0);
+        assert_eq!(date_year(   "-02:00:00:00:00"),    -2);
+        assert_eq!(date_year(   "-42:00:00:00:00"),   -42);
 
-        assert_eq!(date_year( "00:00:00:00:00:00".into()),     0);
-        assert_eq!(date_year( "00:02:00:00:00:00".into()),     2);
-        assert_eq!(date_year( "00:42:00:00:00:00".into()),    42);
-        assert_eq!(date_year( "03:37:00:00:00:00".into()),   337);
-        assert_eq!(date_year( "13:37:00:00:00:00".into()),  1337);
+        assert_eq!(date_year( "00:00:00:00:00:00"),     0);
+        assert_eq!(date_year( "00:02:00:00:00:00"),     2);
+        assert_eq!(date_year( "00:42:00:00:00:00"),    42);
+        assert_eq!(date_year( "03:37:00:00:00:00"),   337);
+        assert_eq!(date_year( "13:37:00:00:00:00"),  1337);
 
-        assert_eq!(date_year("-00:00:00:00:00:00".into()),     0);
-        assert_eq!(date_year("-00:02:00:00:00:00".into()),    -2);
-        assert_eq!(date_year("-00:42:00:00:00:00".into()),   -42);
-        assert_eq!(date_year("-03:37:00:00:00:00".into()),  -337);
-        assert_eq!(date_year("-13:37:00:00:00:00".into()), -1337);
+        assert_eq!(date_year("-00:00:00:00:00:00"),     0);
+        assert_eq!(date_year("-00:02:00:00:00:00"),    -2);
+        assert_eq!(date_year("-00:42:00:00:00:00"),   -42);
+        assert_eq!(date_year("-03:37:00:00:00:00"),  -337);
+        assert_eq!(date_year("-13:37:00:00:00:00"), -1337);
     }
 
     #[test]
     fn date_index_test() {
-        assert_eq!(date_index( "00:00:00:00:00:00".into()),             0);
-        assert_eq!(date_index( "00:02:00:00:00:00".into()),     200000000);
-        assert_eq!(date_index("-00:02:00:00:00:00".into()),    -200000000);
-        assert_eq!(date_index("-00:02:05:00:00:00".into()),    -195000000);
-        assert_eq!(date_index("-00:02:10:00:00:00".into()),    -190000000);
-        assert_eq!(date_index("-00:01:00:00:00:00".into()),    -100000000);
-        assert_eq!(date_index("-00:01:10:00:00:00".into()),     -90000000);
-        assert_eq!(date_index("-00:01:11:28:99:99".into()),     -88710001);
+        assert_eq!(date_index( "00:00:00:00:00:00"),             0);
+        assert_eq!(date_index( "00:02:00:00:00:00"),     200000000);
+        assert_eq!(date_index("-00:02:00:00:00:00"),    -200000000);
+        assert_eq!(date_index("-00:02:05:00:00:00"),    -195000000);
+        assert_eq!(date_index("-00:02:10:00:00:00"),    -190000000);
+        assert_eq!(date_index("-00:01:00:00:00:00"),    -100000000);
+        assert_eq!(date_index("-00:01:10:00:00:00"),     -90000000);
+        assert_eq!(date_index("-00:01:11:28:99:99"),     -88710001);
     }
 }

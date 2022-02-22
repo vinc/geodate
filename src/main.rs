@@ -3,10 +3,6 @@ extern crate geodate;
 
 use getopts::Options;
 
-use geodate::geodate::*;
-use geodate::ephemeris::*;
-use geodate::reverse::*;
-
 use std::env;
 use std::time::SystemTime;
 
@@ -77,7 +73,8 @@ fn main() {
 
     // Convert geodate string back into unix timestamp
     if matches.free.len() == 4 && matches.free[3].contains(":") {
-        println!("{}", get_timestamp(format, matches.free[3].clone(), lon));
+        let date = &matches.free[3];
+        println!("{}", geodate::reverse::timestamp(&format, date, lon));
         return;
     }
 
@@ -91,14 +88,14 @@ fn main() {
     };
 
     if matches.opt_present("e") {
-        let events = get_ephemeris(now, lon, lat);
+        let events = geodate::ephemeris::ephemeris(now, lon, lat);
 
         for (&time, name) in &events {
-            let date = get_formatted_date(&format, time, lon);
+            let date = geodate::formatted_date(&format, time, lon);
             println!("{:20} {}", format!("{}:", name), date);
         }
     } else {
-        let date = get_formatted_date(&format, now, lon);
+        let date = geodate::formatted_date(&format, now, lon);
         println!("{}", date);
     }
 }

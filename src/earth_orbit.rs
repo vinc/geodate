@@ -14,7 +14,7 @@ enum Event {
     DecemberSolstice
 }
 
-fn get_time_of(event: Event, timestamp: i64) -> i64 {
+fn time_of(event: Event, timestamp: i64) -> i64 {
     let jd = unix_to_julian(timestamp);
 
     let y = jde_to_julian_year(jd).floor();
@@ -22,7 +22,7 @@ fn get_time_of(event: Event, timestamp: i64) -> i64 {
     // Convert AD year to millenia, from 2000 AD
     let m = (y - 2000.0) / 1000.0;
 
-    let jdme = get_jdme(event, m);
+    let jdme = jdme(event, m);
 
     // Julian century
     let t = (jdme - J2000) / 36525.0;
@@ -31,13 +31,13 @@ fn get_time_of(event: Event, timestamp: i64) -> i64 {
 
     let l = 1.0 + 0.0334 * cos_deg(w) + 0.0007 * cos_deg(2.0 * w);
 
-    let s = get_periodic_terms(t);
+    let s = periodic_terms(t);
 
     // FIXME: Improve the accuracy
     terrestrial_to_universal_time(julian_to_unix(jdme + (0.00001 * s) / l))
 }
 
-fn get_jdme(event: Event, m: f64) -> f64 {
+fn jdme(event: Event, m: f64) -> f64 {
     let jdme_terms = vec![
         (2451_623.80984, 365_242.37404,  0.05169, -0.00411, -0.00057), // March Equinoxe
         (2451_716.56767, 365_241.62603,  0.00325,  0.00888, -0.00030), // June Solstice
@@ -54,7 +54,7 @@ fn get_jdme(event: Event, m: f64) -> f64 {
       + e * m.powi(4)
 }
 
-fn get_periodic_terms(t: f64) -> f64 {
+fn periodic_terms(t: f64) -> f64 {
     let terms = vec![
         (485.0, 324.96,   1934.136),
         (203.0, 337.23,  32964.467),
@@ -87,56 +87,56 @@ fn get_periodic_terms(t: f64) -> f64 {
     })
 }
 
-fn get_previous_time_of(event: Event, timestamp: i64) -> i64 {
-    let time_of_event = get_time_of(event, timestamp);
+fn previous_time_of(event: Event, timestamp: i64) -> i64 {
+    let time_of_event = time_of(event, timestamp);
     if time_of_event >= timestamp {
         let delta = (365.25 * 86400.0) as i64;
-        get_time_of(event, timestamp - delta)
+        time_of(event, timestamp - delta)
     } else {
         time_of_event
     }
 }
 
-fn get_next_time_of(event: Event, timestamp: i64) -> i64 {
-    let time_of_event = get_time_of(event, timestamp);
+fn next_time_of(event: Event, timestamp: i64) -> i64 {
+    let time_of_event = time_of(event, timestamp);
     if time_of_event <= timestamp {
         let delta = (365.25 * 86400.0) as i64;
-        get_time_of(event, timestamp + delta)
+        time_of(event, timestamp + delta)
     } else {
         time_of_event
     }
 }
 
-pub fn get_previous_march_equinox(timestamp: i64) -> i64 {
-    get_previous_time_of(Event::MarchEquinox, timestamp)
+pub fn previous_march_equinox(timestamp: i64) -> i64 {
+    previous_time_of(Event::MarchEquinox, timestamp)
 }
 
-pub fn get_next_march_equinox(timestamp: i64) -> i64 {
-    get_next_time_of(Event::MarchEquinox, timestamp)
+pub fn next_march_equinox(timestamp: i64) -> i64 {
+    next_time_of(Event::MarchEquinox, timestamp)
 }
 
-pub fn get_previous_june_solstice(timestamp: i64) -> i64 {
-    get_previous_time_of(Event::JuneSolstice, timestamp)
+pub fn previous_june_solstice(timestamp: i64) -> i64 {
+    previous_time_of(Event::JuneSolstice, timestamp)
 }
 
-pub fn get_next_june_solstice(timestamp: i64) -> i64 {
-    get_next_time_of(Event::JuneSolstice, timestamp)
+pub fn next_june_solstice(timestamp: i64) -> i64 {
+    next_time_of(Event::JuneSolstice, timestamp)
 }
 
-pub fn get_previous_september_equinox(timestamp: i64) -> i64 {
-    get_previous_time_of(Event::SeptemberEquinox, timestamp)
+pub fn previous_september_equinox(timestamp: i64) -> i64 {
+    previous_time_of(Event::SeptemberEquinox, timestamp)
 }
 
-pub fn get_next_september_equinox(timestamp: i64) -> i64 {
-    get_next_time_of(Event::SeptemberEquinox, timestamp)
+pub fn next_september_equinox(timestamp: i64) -> i64 {
+    next_time_of(Event::SeptemberEquinox, timestamp)
 }
 
-pub fn get_previous_december_solstice(timestamp: i64) -> i64 {
-    get_previous_time_of(Event::DecemberSolstice, timestamp)
+pub fn previous_december_solstice(timestamp: i64) -> i64 {
+    previous_time_of(Event::DecemberSolstice, timestamp)
 }
 
-pub fn get_next_december_solstice(timestamp: i64) -> i64 {
-    get_next_time_of(Event::DecemberSolstice, timestamp)
+pub fn next_december_solstice(timestamp: i64) -> i64 {
+    next_time_of(Event::DecemberSolstice, timestamp)
 }
 
 #[cfg(test)]
@@ -145,40 +145,40 @@ mod tests {
     use utils::*;
 
     #[test]
-    fn get_next_june_solstice_test() {
+    fn next_june_solstice_test() {
         // Example 27.a from "Astronomical Algoritms"
         // June Solstice: 1962-06-21 21:25:08 TD
         let t = terrestrial_to_universal_time(parse_time("1962-06-21T21:25:08+00:00"));
-        assert_eq!(t, get_next_june_solstice(parse_time("1962-06-01T00:00:00+00:00")));
+        assert_eq!(t, next_june_solstice(parse_time("1962-06-01T00:00:00+00:00")));
     }
 
     #[test]
-    fn get_previous_december_solstice_test() {
+    fn previous_december_solstice_test() {
         let accuracy = 20; // TODO: Improve accuracy
         let solstice_december_2012 = parse_time("2012-12-21T11:11:37+0000");
 
         let times = vec![
-            get_previous_december_solstice(parse_time("2014-06-01T00:00:00+0000")),
+            previous_december_solstice(parse_time("2014-06-01T00:00:00+0000")),
             parse_time("2013-06-01T00:00:00+0000"),
         ];
 
         for t in times {
-            assert_approx_eq!(solstice_december_2012, get_previous_december_solstice(t), accuracy);
+            assert_approx_eq!(solstice_december_2012, previous_december_solstice(t), accuracy);
         }
     }
 
     #[test]
-    fn get_next_december_solstice_test() {
+    fn next_december_solstice_test() {
         let accuracy = 20; // TODO: Improve accuracy
         let solstice_december_2013 = parse_time("2013-12-21T17:11:00+0000");
 
         let times = vec![
-            get_next_december_solstice(parse_time("2012-06-01T00:00:00+0000")),
+            next_december_solstice(parse_time("2012-06-01T00:00:00+0000")),
             parse_time("2013-06-01T00:00:00+0000"),
         ];
 
         for t in times {
-            assert_approx_eq!(solstice_december_2013, get_next_december_solstice(t), accuracy);
+            assert_approx_eq!(solstice_december_2013, next_december_solstice(t), accuracy);
         }
     }
 }
