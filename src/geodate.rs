@@ -184,36 +184,36 @@ mod tests {
     #[test]
     fn get_lunisolar_date_test() {
         let format = "%u:%m:%d:%c:%b";
-        assert_eq!("00:00:00:00:00", get_formatted_date(format, parse_time("1970-01-07T00:06:15+0000"), 0.0));
-        assert_eq!("00:11:29:99:99", get_formatted_date(format, parse_time("1970-12-28T00:01:20+0000"), 0.0));
-        assert_eq!("01:00:00:00:00", get_formatted_date(format, parse_time("1970-12-28T00:01:30+0000"), 0.0));
-        assert_eq!("06:00:00:00:00", get_formatted_date(format, parse_time("1976-01-01T00:03:20+0000"), 0.0));
+        assert_eq!("00:00:00:00:00", get_formatted_date(format, parse_time("1970-01-07T00:06:15+00:00"), 0.0));
+        assert_eq!("00:11:29:99:99", get_formatted_date(format, parse_time("1970-12-28T00:01:20+00:00"), 0.0));
+        assert_eq!("01:00:00:00:00", get_formatted_date(format, parse_time("1970-12-28T00:01:30+00:00"), 0.0));
+        assert_eq!("06:00:00:00:00", get_formatted_date(format, parse_time("1976-01-01T00:03:20+00:00"), 0.0));
         assert_eq!("14:03:03:71:59", get_formatted_date(format, 449947500, -2.7653));
-        assert_eq!("43:11:28:99:98", get_formatted_date(format, parse_time("2014-01-01T00:03:20+0000"), 0.0));
-        assert_eq!("43:11:28:99:99", get_formatted_date(format, parse_time("2014-01-01T00:03:30+0000"), 0.0));
-        assert_eq!("44:00:00:00:00", get_formatted_date(format, parse_time("2014-01-01T00:03:40+0000"), 0.0));
+        assert_eq!("43:11:28:99:98", get_formatted_date(format, parse_time("2014-01-01T00:03:20+00:00"), 0.0));
+        assert_eq!("43:11:28:99:99", get_formatted_date(format, parse_time("2014-01-01T00:03:30+00:00"), 0.0));
+        assert_eq!("44:00:00:00:00", get_formatted_date(format, parse_time("2014-01-01T00:03:40+00:00"), 0.0));
 
         let format = "%h:%u:%m:%d:%c:%b";
-        assert_eq!("00:63:00:00:00:00", get_formatted_date(format, parse_time("2033-01-01T00:03:45+0000"), 0.0));
-        assert_eq!("01:01:00:00:00:00", get_formatted_date(format, parse_time("2071-01-01T00:03:30+0000"), 0.0));
-        assert_eq!("01:50:00:00:00:00", get_formatted_date(format, parse_time("2120-01-01T00:03:00+0000"), 0.0));
-        assert_eq!("02:15:00:00:00:00", get_formatted_date(format, parse_time("2185-01-01T00:03:30+0000"), 0.0));
-        assert_eq!("03:40:00:00:00:00", get_formatted_date(format, parse_time("2310-01-01T00:02:30+0000"), 0.0));
-        assert_eq!("05:30:00:00:00:00", get_formatted_date(format, parse_time("2500-01-01T00:02:30+0000"), 0.0));
+        assert_eq!("00:63:00:00:00:00", get_formatted_date(format, parse_time("2033-01-01T00:03:45+00:00"), 0.0));
+        assert_eq!("01:01:00:00:00:00", get_formatted_date(format, parse_time("2071-01-01T00:03:30+00:00"), 0.0));
+        assert_eq!("01:50:00:00:00:00", get_formatted_date(format, parse_time("2120-01-01T00:03:00+00:00"), 0.0));
+        assert_eq!("02:15:00:00:00:00", get_formatted_date(format, parse_time("2185-01-01T00:03:30+00:00"), 0.0));
+        assert_eq!("03:40:00:00:00:00", get_formatted_date(format, parse_time("2310-01-01T00:02:30+00:00"), 0.0));
+        assert_eq!("05:30:00:00:00:00", get_formatted_date(format, parse_time("2500-01-01T00:02:30+00:00"), 0.0));
 
         let format = "%u:%m:%d:%c:%b";
-        assert_eq!("63:00:00:00:00", get_formatted_date(format, parse_time("2033-01-01T00:03:45+0000"), 0.0));
-        assert_eq!("01:00:00:00:00", get_formatted_date(format, parse_time("2071-01-01T00:03:30+0000"), 0.0));
-        assert_eq!("50:00:00:00:00", get_formatted_date(format, parse_time("2120-01-01T00:03:00+0000"), 0.0));
-        assert_eq!("15:00:00:00:00", get_formatted_date(format, parse_time("2185-01-01T00:03:30+0000"), 0.0));
-        assert_eq!("40:00:00:00:00", get_formatted_date(format, parse_time("2310-01-01T00:02:30+0000"), 0.0));
-        assert_eq!("30:00:00:00:00", get_formatted_date(format, parse_time("2500-01-01T00:02:30+0000"), 0.0));
+        assert_eq!("63:00:00:00:00", get_formatted_date(format, parse_time("2033-01-01T00:03:45+00:00"), 0.0));
+        assert_eq!("01:00:00:00:00", get_formatted_date(format, parse_time("2071-01-01T00:03:30+00:00"), 0.0));
+        assert_eq!("50:00:00:00:00", get_formatted_date(format, parse_time("2120-01-01T00:03:00+00:00"), 0.0));
+        assert_eq!("15:00:00:00:00", get_formatted_date(format, parse_time("2185-01-01T00:03:30+00:00"), 0.0));
+        assert_eq!("40:00:00:00:00", get_formatted_date(format, parse_time("2310-01-01T00:02:30+00:00"), 0.0));
+        assert_eq!("30:00:00:00:00", get_formatted_date(format, parse_time("2500-01-01T00:02:30+00:00"), 0.0));
 
         // Check bugs fixed by version 0.2.1
-        assert_eq!("46:02:10:49:46", get_formatted_date(format, parse_time("2016-03-19T12:00:00+0000"), 0.0));
-        assert_eq!("46:02:11:80:04", get_formatted_date(format, parse_time("2016-03-20T08:00:00+0000"), 170.0));
-        assert_eq!("30:04:28:99:99", get_formatted_date(format, parse_time("2000-06-01T17:57:50+0000"), 90.0));
-        assert_eq!("30:05:00:00:00", get_formatted_date(format, parse_time("2000-06-01T17:58:00+0000"), 90.0));
+        assert_eq!("46:02:10:49:46", get_formatted_date(format, parse_time("2016-03-19T12:00:00+00:00"), 0.0));
+        assert_eq!("46:02:11:80:04", get_formatted_date(format, parse_time("2016-03-20T08:00:00+00:00"), 170.0));
+        assert_eq!("30:04:28:99:99", get_formatted_date(format, parse_time("2000-06-01T17:57:50+00:00"), 90.0));
+        assert_eq!("30:05:00:00:00", get_formatted_date(format, parse_time("2000-06-01T17:58:00+00:00"), 90.0));
 
         // Check bugs fixed by version 0.3.0
         assert_eq!("00:11:29:99:99", get_formatted_date(format, parse_time("1970-12-28T00:08:40+00:00"), -1.8262));
@@ -226,27 +226,27 @@ mod tests {
         // Negative time
         let format = "%h:%u:%m:%d:%c:%b";
         assert_eq!("-00:01:11:22:99:75", get_formatted_date(format, 0, 0.0)); // Unix Epoch
-        assert_eq!("-00:13:00:00:00:00", get_formatted_date(format, parse_time("1957-01-01T00:03:40+0000"), 0.0));
-        assert_eq!("-00:70:00:00:00:00", get_formatted_date(format, parse_time("1900-01-01T00:03:40+0000"), 0.0));
-        assert_eq!("-02:71:00:00:00:00", get_formatted_date(format, parse_time("1699-01-01T00:04:35+0000"), 0.0));
-        assert_eq!("-03:28:00:00:00:00", get_formatted_date(format, parse_time("1642-01-01T00:04:40+0000"), 0.0));
-        assert_eq!("-03:47:00:00:00:00", get_formatted_date(format, parse_time("1623-01-01T00:04:30+0000"), 0.0));
+        assert_eq!("-00:13:00:00:00:00", get_formatted_date(format, parse_time("1957-01-01T00:03:40+00:00"), 0.0));
+        assert_eq!("-00:70:00:00:00:00", get_formatted_date(format, parse_time("1900-01-01T00:03:40+00:00"), 0.0));
+        assert_eq!("-02:71:00:00:00:00", get_formatted_date(format, parse_time("1699-01-01T00:04:35+00:00"), 0.0));
+        assert_eq!("-03:28:00:00:00:00", get_formatted_date(format, parse_time("1642-01-01T00:04:40+00:00"), 0.0));
+        assert_eq!("-03:47:00:00:00:00", get_formatted_date(format, parse_time("1623-01-01T00:04:30+00:00"), 0.0));
 
         let format = "%u:%m:%d:%c:%b";
         assert_eq!("-01:11:22:99:75", get_formatted_date(format, 0, 0.0)); // Unix Epoch
-        assert_eq!("-13:00:00:00:00", get_formatted_date(format, parse_time("1957-01-01T00:03:40+0000"), 0.0));
-        assert_eq!("-70:00:00:00:00", get_formatted_date(format, parse_time("1900-01-01T00:03:40+0000"), 0.0));
-        assert_eq!("-71:00:00:00:00", get_formatted_date(format, parse_time("1699-01-01T00:04:35+0000"), 0.0));
-        assert_eq!("-28:00:00:00:00", get_formatted_date(format, parse_time("1642-01-01T00:04:40+0000"), 0.0));
-        assert_eq!("-47:00:00:00:00", get_formatted_date(format, parse_time("1623-01-01T00:04:30+0000"), 0.0));
+        assert_eq!("-13:00:00:00:00", get_formatted_date(format, parse_time("1957-01-01T00:03:40+00:00"), 0.0));
+        assert_eq!("-70:00:00:00:00", get_formatted_date(format, parse_time("1900-01-01T00:03:40+00:00"), 0.0));
+        assert_eq!("-71:00:00:00:00", get_formatted_date(format, parse_time("1699-01-01T00:04:35+00:00"), 0.0));
+        assert_eq!("-28:00:00:00:00", get_formatted_date(format, parse_time("1642-01-01T00:04:40+00:00"), 0.0));
+        assert_eq!("-47:00:00:00:00", get_formatted_date(format, parse_time("1623-01-01T00:04:30+00:00"), 0.0));
 
         // Bug
         assert_eq!("-30:11:28:99:99", get_formatted_date(format, parse_time("1940-12-28T00:01:39+00:00"), 0.0)); // Unix Epoch
         assert_eq!("-29:00:00:00:00", get_formatted_date(format, parse_time("1940-12-28T00:01:40+00:00"), 0.0)); // Unix Epoch
 
         // Bug with "50:08:28:100:00" at solar midnight
-        assert_eq!("50:08:27:99:99", get_formatted_date(format, parse_time("2020-09-15T23:55:01+0000"), 0.0));
-        assert_eq!("50:08:28:00:00", get_formatted_date(format, parse_time("2020-09-15T23:55:02+0000"), 0.0));
-        assert_eq!("50:08:28:00:00", get_formatted_date(format, parse_time("2020-09-15T23:55:03+0000"), 0.0));
+        assert_eq!("50:08:27:99:99", get_formatted_date(format, parse_time("2020-09-15T23:55:01+00:00"), 0.0));
+        assert_eq!("50:08:28:00:00", get_formatted_date(format, parse_time("2020-09-15T23:55:02+00:00"), 0.0));
+        assert_eq!("50:08:28:00:00", get_formatted_date(format, parse_time("2020-09-15T23:55:03+00:00"), 0.0));
     }
 }

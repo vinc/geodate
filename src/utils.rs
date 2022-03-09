@@ -6,9 +6,10 @@ macro_rules! assert_approx_eq {
     })
 }
 
+
 #[cfg(test)]
 pub fn parse_time(iso: &str) -> i64 {
-    time::strptime(iso, "%FT%T%z").unwrap().to_timespec().sec
+    time::OffsetDateTime::parse(iso, &time::format_description::well_known::Rfc3339).unwrap().unix_timestamp()
 }
 
 #[cfg(test)]
@@ -23,3 +24,4 @@ mod tests {
         assert_eq!(-2208988800, parse_time("1900-01-01T00:00:00+00:00"));
     }
 }
+

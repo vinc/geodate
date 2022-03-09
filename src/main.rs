@@ -40,7 +40,7 @@ fn main() {
 
     let matches = match opts.parse(&args) {
         Ok(m) => { m }
-        Err(f) => { panic!(f.to_string()) }
+        Err(f) => { panic!("{}", f.to_string()) }
     };
 
     if matches.opt_present("h") || matches.free.len() < 3 {

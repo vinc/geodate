@@ -33,4 +33,4 @@ getopts = { version = "0.2", optional = true }
 num-traits = { version = "0.2.14", default-features = false, features = ["libm"] }
 
 [dev-dependencies]
-time = "0.1"
+time = { version = "0.3", features = ["parsing"] }
