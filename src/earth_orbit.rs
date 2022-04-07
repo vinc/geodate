@@ -148,18 +148,18 @@ mod tests {
     fn get_next_june_solstice_test() {
         // Example 27.a from "Astronomical Algoritms"
         // June Solstice: 1962-06-21 21:25:08 TD
-        let t = terrestrial_to_universal_time(parse_time("1962-06-21T21:25:08+00:00"));
-        assert_eq!(t, get_next_june_solstice(parse_time("1962-06-01T00:00:00+00:00")));
+        let t = terrestrial_to_universal_time(parse_time("1962-06-21T21:25:08.00+00:00"));
+        assert_eq!(t, get_next_june_solstice(parse_time("1962-06-01T00:00:00.00+00:00")));
     }
 
     #[test]
     fn get_previous_december_solstice_test() {
         let accuracy = 20; // TODO: Improve accuracy
-        let solstice_december_2012 = parse_time("2012-12-21T11:11:37+0000");
+        let solstice_december_2012 = parse_time("2012-12-21T11:11:37.00+00:00");
 
         let times = vec![
-            get_previous_december_solstice(parse_time("2014-06-01T00:00:00+0000")),
-            parse_time("2013-06-01T00:00:00+0000"),
+            get_previous_december_solstice(parse_time("2014-06-01T00:00:00.00+00:00")),
+            parse_time("2013-06-01T00:00:00.00+00:00"),
         ];
 
         for t in times {
@@ -170,11 +170,11 @@ mod tests {
     #[test]
     fn get_next_december_solstice_test() {
         let accuracy = 20; // TODO: Improve accuracy
-        let solstice_december_2013 = parse_time("2013-12-21T17:11:00+0000");
+        let solstice_december_2013 = parse_time("2013-12-21T17:11:00.00+00:00");
 
         let times = vec![
-            get_next_december_solstice(parse_time("2012-06-01T00:00:00+0000")),
-            parse_time("2013-06-01T00:00:00+0000"),
+            get_next_december_solstice(parse_time("2012-06-01T00:00:00.00+00:00")),
+            parse_time("2013-06-01T00:00:00.00+00:00"),
         ];
 
         for t in times {

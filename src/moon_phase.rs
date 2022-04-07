@@ -261,43 +261,43 @@ mod tests {
     fn get_lunation_number_test() {
         // Example 49.a from "Astronomical Algoritms"
         // New Moon: 1977-02-18 03:37:42 TD
-        let t = terrestrial_to_universal_time(parse_time("1977-02-18T03:37:42+00:00"));
+        let t = terrestrial_to_universal_time(parse_time("1977-02-18T03:37:42.00+00:00"));
         assert_eq!(-283.0, get_lunation_number(t));
 
         // Later in the day
-        let t = parse_time("1977-02-18T12:00:00+00:00");
+        let t = parse_time("1977-02-18T12:00:00.00+00:00");
         assert_eq!(-283.0, get_lunation_number(t));
 
         // Later in the month
-        let t = parse_time("1977-02-30T12:00:00+00:00");
+        let t = parse_time("1977-02-28T12:00:00.00+00:00");
         assert_eq!(-283.0, get_lunation_number(t));
 
         // Earlier in the day
-        let t = parse_time("1977-02-18T01:00:00+00:00");
+        let t = parse_time("1977-02-18T01:00:00.00+00:00");
         assert_eq!(-283.0, get_lunation_number(t));
 
         // A few days before
-        let t = parse_time("1977-02-14T12:00:00+00:00");
+        let t = parse_time("1977-02-14T12:00:00.00+00:00");
         assert_eq!(-283.0, get_lunation_number(t)); // FIXME: should be -284
 
         // A week before
-        let t = parse_time("1977-02-11T12:00:00+00:00");
+        let t = parse_time("1977-02-11T12:00:00.00+00:00");
         assert_eq!(-284.0, get_lunation_number(t));
 
         // Meeus Lunation 0
-        let t = parse_time("2000-01-06T18:14:00+00:00");
+        let t = parse_time("2000-01-06T18:14:00.00+00:00");
         assert_eq!(0.0, get_lunation_number(t));
 
         // Brown Lunation 1
-        let t = parse_time("1923-01-17T02:41:00+00:00");
+        let t = parse_time("1923-01-17T02:41:00.00+00:00");
         assert_eq!(-952.0, get_lunation_number(t));
 
         // Islamic Lunation 1
-        let t = parse_time("0622-07-16T00:00:00+00:00");
+        let t = parse_time("0622-07-16T00:00:00.00+00:00");
         assert_eq!(-17037.0, get_lunation_number(t));
 
         // Thai Lunation 0
-        let t = parse_time("0638-03-22T00:00:00+00:00");
+        let t = parse_time("0638-03-22T00:00:00.00+00:00");
         assert_eq!(-16843.0, get_lunation_number(t)); // FIXME: should be -16842
     }
 
@@ -306,11 +306,11 @@ mod tests {
         // Example 49.a from "Astronomical Algoritms"
         // New Moon: 1977-02-18 03:37:42 TD
         let lunation_number = -283.0;
-        let t = terrestrial_to_universal_time(parse_time("1977-02-18T03:37:42+00:00"));
+        let t = terrestrial_to_universal_time(parse_time("1977-02-18T03:37:42.00+00:00"));
         assert_eq!(t, get_new_moon(lunation_number));
 
         // First new moon of 1970
-        let t = parse_time("1970-01-07T20:35:27+0000");
+        let t = parse_time("1970-01-07T20:35:27.00+00:00");
         assert_eq!(t, get_new_moon(get_lunation_number(0) + 1.0));
     }
 
