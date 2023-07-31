@@ -166,7 +166,7 @@ mod tests {
 
     #[test]
     fn get_previous_december_solstice_test() {
-        let accuracy = 20; // TODO: Improve accuracy
+        let accuracy = 15; // TODO: Improve accuracy
         let solstice_december_2012 = parse_time("2012-12-21T11:11:37.00+00:00");
 
         let times = vec![
@@ -181,7 +181,7 @@ mod tests {
 
     #[test]
     fn get_next_december_solstice_test() {
-        let accuracy = 20; // TODO: Improve accuracy
+        let accuracy = 15; // TODO: Improve accuracy
         let solstice_december_2013 = parse_time("2013-12-21T17:11:00.00+00:00");
 
         let times = vec![
