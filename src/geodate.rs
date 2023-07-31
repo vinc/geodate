@@ -9,13 +9,13 @@ use num_traits::Float;
 #[derive(Clone, Copy)]
 pub enum Epoch {
     Gregorian,
-    Unix
+    Unix,
 }
 
 #[derive(Clone, Copy)]
 pub enum Calendar {
     Lunisolar,
-    Solar
+    Solar,
 }
 
 static ZEROS: [i64; 6] = [
@@ -25,7 +25,7 @@ static ZEROS: [i64; 6] = [
      -1009843200, // 1938-01-01 | occurs on a new moon day,
      -2208988800, // 1900-01-01 | but we cannot go further
      -8551872000, // 1699-01-01 | back than 1620 with the
-    -10950249600  // 1623-01-01 | current delta time formula.
+    -10950249600, // 1623-01-01 | current delta time formula.
 ];
 
 /// Get a string representation of a geodate
@@ -50,7 +50,7 @@ pub fn get_formatted_date(format: &str, timestamp: i64, longitude: f64) -> Strin
     if format.contains("%x") {
         res = res.replace("%x", &format!("{}", now));
 
-        if !format.contains("%") {
+        if !format.contains('%') {
             return res;
         }
     }
@@ -103,18 +103,14 @@ pub fn get_formatted_date(format: &str, timestamp: i64, longitude: f64) -> Strin
         t += 86400;
         if new_month < t + 86400 {
             new_month = match calendar {
-                Calendar::Solar => {
-                    match m {
+                Calendar::Solar => match m {
                         0 => get_next_june_solstice(new_month),
                         1 => get_next_september_equinox(new_month),
                         2 => get_next_december_solstice(new_month),
                         3 => get_next_march_equinox(new_month),
-                        _ => unreachable!()
-                    }
+                    _ => unreachable!(),
                 },
-                Calendar::Lunisolar => {
-                    get_next_new_moon(new_month)
-                }
+                Calendar::Lunisolar => get_next_new_moon(new_month),
             };
             d = 0;
             m += 1;
@@ -128,7 +124,7 @@ pub fn get_formatted_date(format: &str, timestamp: i64, longitude: f64) -> Strin
 
     let epoch_zero = match epoch {
         Epoch::Unix      => ZEROS[0],
-        Epoch::Gregorian => ZEROS[3]
+        Epoch::Gregorian => ZEROS[3],
     };
 
     y += ((zero - epoch_zero) as f64 / 86400.0 / 365.25).round() as i64;
@@ -141,7 +137,7 @@ pub fn get_formatted_date(format: &str, timestamp: i64, longitude: f64) -> Strin
         let h = y / 100;
         res = res.replace("%h", &format!("{:02}", h));
     }
-    y = y % 100;
+    y %= 100;
 
     res = res.replace("%u", &format!("{:02}", y));
     res = res.replace("%y", &format!("{:02}", y));

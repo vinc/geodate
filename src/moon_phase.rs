@@ -1,6 +1,6 @@
-use math::*;
-use julian::*;
 use delta_time::*;
+use julian::*;
+use math::*;
 
 use core::ops::Rem;
 #[cfg(not(feature = "std"))]
@@ -9,10 +9,10 @@ use num_traits::Float;
 #[repr(usize)]
 #[derive(Clone, Copy)]
 enum MoonPhase {
-    NewMoon,
-    FirstQuarterMoon,
-    FullMoon,
-    LastQuarterMoon
+    New,
+    FirstQuarter,
+    Full,
+    LastQuarter,
 }
 
 // From "Astronomical Algorithms"
@@ -21,10 +21,10 @@ fn get_time_of(phase: MoonPhase, lunation_number: f64) -> i64 {
     /*
     // TODO: use `lunation_number: i64`
     let k = match phase {
-        MoonPhase::NewMoon          => (lunation_number as f64) + 0.00;
-        MoonPhase::FirstQuarterMoon => (lunation_number as f64) + 0.25;
-        MoonPhase::FullMoon         => (lunation_number as f64) + 0.50;
-        MoonPhase::LastQuarterMoon  => (lunation_number as f64) + 0.75;
+        MoonPhase::New          => (lunation_number as f64) + 0.00;
+        MoonPhase::FirstQuarter => (lunation_number as f64) + 0.25;
+        MoonPhase::Full         => (lunation_number as f64) + 0.50;
+        MoonPhase::LastQuarter  => (lunation_number as f64) + 0.75;
     };
     */
 
@@ -56,7 +56,7 @@ fn get_time_of(phase: MoonPhase, lunation_number: f64) -> i64 {
     // Longitude of the ascending node of the lunar orbit
     let o = 124.7746
           - 1.563_755_88 * k
-          + 0.002_0672   * t.powi(2)
+          + 0.002_067_2   * t.powi(2)
           + 0.000_002_15 * t.powi(3);
 
     let e = (e.rem(360.0) + 360.0).rem(360.0);
@@ -129,7 +129,7 @@ fn get_time_of(phase: MoonPhase, lunation_number: f64) -> i64 {
         [0, 0, 0, 0],
         [0, 0, 0, 0],
         [0, 0, 0, 0],
-        [0, 0, 0, 0]
+        [0, 0, 0, 0],
     ];
 
     // Sum the following terms multiplied a number of times
@@ -184,8 +184,8 @@ fn get_time_of(phase: MoonPhase, lunation_number: f64) -> i64 {
           + 0.00002 *     cos_deg(2.0 * f);
 
     let cor = match phase {
-        MoonPhase::FirstQuarterMoon => cor + w,
-        MoonPhase::LastQuarterMoon  => cor - w,
+        MoonPhase::FirstQuarter => cor + w,
+        MoonPhase::LastQuarter  => cor - w,
         _                           => cor
     };
 
@@ -212,19 +212,19 @@ fn get_time_of(phase: MoonPhase, lunation_number: f64) -> i64 {
 }
 
 pub fn get_new_moon(lunation_number: f64) -> i64 {
-    get_time_of(MoonPhase::NewMoon, lunation_number)
+    get_time_of(MoonPhase::New, lunation_number)
 }
 
 pub fn get_first_quarter_moon(lunation_number: f64) -> i64 {
-    get_time_of(MoonPhase::FirstQuarterMoon, lunation_number)
+    get_time_of(MoonPhase::FirstQuarter, lunation_number)
 }
 
 pub fn get_full_moon(lunation_number: f64) -> i64 {
-    get_time_of(MoonPhase::FullMoon, lunation_number)
+    get_time_of(MoonPhase::Full, lunation_number)
 }
 
 pub fn get_last_quarter_moon(lunation_number: f64) -> i64 {
-    get_time_of(MoonPhase::LastQuarterMoon, lunation_number)
+    get_time_of(MoonPhase::LastQuarter, lunation_number)
 }
 
 /*

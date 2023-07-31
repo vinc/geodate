@@ -9,7 +9,7 @@ pub fn delta_time(year: f64) -> f64 {
     // FIXME: Avoid discontinuity around 2013
     if year >= 2013.0 {
         let t = year - 2015.0;
-        return 67.62 + 0.3645 * t + 0.0039755 * t.powi(2)
+        return 67.62 + 0.3645 * t + 0.0039755 * t.powi(2);
     }
 
     // From "Delta T: Polynomial Approximation of Time Period 1620-2013"
@@ -26,16 +26,16 @@ pub fn delta_time(year: f64) -> f64 {
         (0.115, 55.281,   91.248,   87.202, -3092.565,  8255.422)
     ];
     let (k, a0, a1, a2, a3, a4) = match year.round() as i64 {
-        1620 ..= 1672 => terms[0],
-        1673 ..= 1729 => terms[1],
-        1730 ..= 1797 => terms[2],
-        1798 ..= 1843 => terms[3],
-        1844 ..= 1877 => terms[4],
-        1878 ..= 1904 => terms[5],
-        1905 ..= 1945 => terms[6],
-        1946 ..= 1989 => terms[7],
-        1990 ..= 2013 => terms[8],
-        _             => panic!("year too far back in time")
+        1620..=1672 => terms[0],
+        1673..=1729 => terms[1],
+        1730..=1797 => terms[2],
+        1798..=1843 => terms[3],
+        1844..=1877 => terms[4],
+        1878..=1904 => terms[5],
+        1905..=1945 => terms[6],
+        1946..=1989 => terms[7],
+        1990..=2013 => terms[8],
+        _ => panic!("year too far back in time"),
     };
     let u = k + (year - 2000.0) / 100.0;
 
