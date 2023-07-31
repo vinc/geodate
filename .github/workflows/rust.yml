@@ -1,18 +1,24 @@
 name: Rust
-on: [push]
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
 env:
   CARGO_TERM_COLOR: always
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/cache@v2
+    - uses: actions/checkout@v3
+    - uses: actions/cache@v3
       with:
         path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          target
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     - run: cargo build --verbose
     - run: cargo test --verbose
