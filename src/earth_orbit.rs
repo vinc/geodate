@@ -61,9 +61,9 @@ fn get_jdme(event: Event, y: f64) -> f64 {
     };
 
     a + b * m
-      + c * m * m
-      + d * m * m * m
-      + e * m * m * m * m
+      + c * m.powi(2)
+      + d * m.powi(3)
+      + e * m.powi(4)
 }
 
 fn get_periodic_terms(t: f64) -> f64 {
