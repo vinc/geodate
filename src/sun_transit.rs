@@ -9,7 +9,7 @@ enum Event {
     Midnight,
     Sunrise,
     Midday,
-    Sunset
+    Sunset,
 }
 
 fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64, altitude: f64) -> Option<i64> {
@@ -23,7 +23,7 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64, alti
     let r = jde_to_julian_millenia(jd);
 
     // Solar mean anomaly
-    let m = 357.529_11 + 35_999.050_29 * t + 0.000_1537 * t.powi(2);
+    let m = 357.529_11 + 35_999.050_29 * t + 0.000_153_7 * t.powi(2);
 
     // Equation of the Center
     let c = sin_deg(1.0 * m) * (1.914_602 - 0.004_817 * t - 0.000_014 * t.powi(2))
@@ -42,11 +42,11 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64, alti
 
     // Geometric mean longitude
     // (L0)
-    let l0 = 280.466_4567 + 360_007.698_2779 * r
+    let l0 = 280.466_456_7 + 360_007.698_277_9 * r
            + 0.030_320_28 * r.powi(2)
            + r.powi(3) / 49931.0
            - r.powi(4) / 15300.0
-           - r.powi(5) / 2000_000.0;
+           - r.powi(5) / 2_000_000.0;
 
     // True longitude
     let o = l0 + c;
@@ -61,7 +61,6 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64, alti
     // Apparent longitude
     let p = 125.04 - 1934.136 * t;
     let l = o - 0.00569 - 0.00478 * sin_deg(p);
-
 
     // Right ascension
     // (α)
@@ -89,7 +88,7 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64, alti
     let l0 = modulo(l0, 360.0); // FIXME: Move that above?
 
     // Equation of time
-    let eot = l0 - 0.005_7183 - a + nl * cos_deg(ep);
+    let eot = l0 - 0.005_718_3 - a + nl * cos_deg(ep);
 
     let transit = (720.0 - 4.0 * (longitude + eot)) / 1440.0;
     let transit = jd.floor() + modulo(transit, 1.0) - 0.5;
@@ -109,14 +108,14 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64, alti
                      (cos_deg(latitude) * cos_deg(d)));
 
     if (event == Event::Sunrise || event == Event::Sunset) && w.is_nan() {
-        return None
+        return None;
     }
 
     let jd_event = match event {
         Event::Midnight => transit - 0.5,
         Event::Sunrise  => transit - w / 360.0,
         Event::Sunset   => transit + w / 360.0,
-        Event::Midday   => transit
+        Event::Midday   => transit,
     };
 
     Some(julian_to_unix(jd_event))
@@ -132,35 +131,35 @@ pub fn nutation(julian_century: f64) -> (f64, f64) {
     // (D)
     let d = 297.85036
           + 445_267.111_480 * t
-          - 0.001_9142 * t.powi(2)
+          - 0.001_914_2 * t.powi(2)
           + t.powi(3) / 189_474.0;
 
     // Mean anomaly of the Sun
     // (M)
-    let ms = 357.52_772
+    let ms = 357.527_72
            + 35_999.050_340 * t
-           - 0.000_1603 * t.powi(2)
+           - 0.000_160_3 * t.powi(2)
            - t.powi(3) / 300_000.0;
 
     // Mean anomaly of the Moon
     // (M')
-    let mm = 134.96_298
+    let mm = 134.962_98
            + 477_198.867_398 * t
-           + 0.008_6972 * t.powi(2)
+           + 0.008_697_2 * t.powi(2)
            - t.powi(3) / 56_250.0;
 
     // Moon's argument of latitude
     // (F)
     let fm = 93.27191
            + 483_202.017_538 * t
-           - 0.003_6825 * t.powi(2)
+           - 0.003_682_5 * t.powi(2)
            + t.powi(3) / 327_270.0;
 
     // Longitude of the ascending node of the Moon's mean orbit on the ecliptic
     // (Ω)
     let pm = 125.04452
-           - 1934.136_261 * t
-           + 0.002_0708 * t.powi(2)
+           - 1_934.136_261 * t
+           + 0.002_070_8 * t.powi(2)
            + t.powi(3) / 450_000.0;
 
     let d = modulo(d, 360.0);
@@ -251,7 +250,7 @@ mod tests {
         let t = jde_to_julian_century(jd);
         let (nl, no) = nutation(t);
 
-        assert_eq!(2446_895.5, jd);
+        assert_eq!(2_446_895.5, jd);
         assert_approx_eq!(-3.788, 3600.0 * nl, 0.1);
         assert_approx_eq!( 9.443, 3600.0 * no, 0.1);
 
@@ -262,7 +261,7 @@ mod tests {
         let t = (jd - J2000) / 36525.0;
         let (nl, _) = nutation(t);
 
-        assert_eq!(2448_908.5, jd);
+        assert_eq!(2_448_908.5, jd);
         assert_approx_eq!(0.004_419, nl, 0.00005);
         assert_approx_eq!(15.908, 3600.0 * nl, 0.2);
     }
@@ -287,7 +286,7 @@ mod tests {
         let e0 = mean_obliquity_eliptic(t);
         let ep = e0 + no;
 
-        assert_approx_eq!(23.440_1443, ep, 0.00001);
+        assert_approx_eq!(23.440_144_3, ep, 0.00001);
     }
 
     #[test]

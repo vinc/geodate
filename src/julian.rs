@@ -1,7 +1,7 @@
 #[cfg(not(feature = "std"))]
 use num_traits::Float;
 
-pub const J2000: f64 = 2451_545.0; // TODO: Add 0.0009 to this value?
+pub const J2000: f64 = 2_451_545.0; // TODO: Add 0.0009 to this value?
 
 pub fn unix_to_julian(timestamp: i64) -> f64 {
     (timestamp as f64 / 86400.0) + 2440587.5

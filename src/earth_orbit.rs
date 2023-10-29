@@ -1,6 +1,6 @@
-use math::*;
-use julian::*;
 use delta_time::*;
+use julian::*;
+use math::*;
 
 #[cfg(not(feature = "std"))]
 use num_traits::Float;
@@ -11,7 +11,7 @@ enum Event {
     MarchEquinox,
     JuneSolstice,
     SeptemberEquinox,
-    DecemberSolstice
+    DecemberSolstice,
 }
 
 fn get_time_of(event: Event, timestamp: i64) -> i64 {
@@ -39,10 +39,10 @@ fn get_time_of(event: Event, timestamp: i64) -> i64 {
 
 fn get_jdme(event: Event, m: f64) -> f64 {
     let jdme_terms = vec![
-        (2451_623.80984, 365_242.37404,  0.05169, -0.00411, -0.00057), // March Equinoxe
-        (2451_716.56767, 365_241.62603,  0.00325,  0.00888, -0.00030), // June Solstice
-        (2451_810.21715, 365_242.01767, -0.11575,  0.00337,  0.00078), // September Equinoxe
-        (2451_900.05952, 365_242.74049, -0.06223, -0.00823,  0.00032)  // December Solstice
+        (2_451_623.809_84, 365_242.374_04,  0.05169, -0.00411, -0.00057), // March Equinoxe
+        (2_451_716.567_67, 365_241.626_03,  0.00325,  0.00888, -0.00030), // June Solstice
+        (2_451_810.217_15, 365_242.017_67, -0.11575,  0.00337,  0.00078), // September Equinoxe
+        (2_451_900.059_52, 365_242.740_49, -0.06223, -0.00823,  0.00032)  // December Solstice
     ];
 
     let i = event as usize;

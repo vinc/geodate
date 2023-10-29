@@ -1,11 +1,11 @@
-use sun_transit::*;
 use earth_orbit::*;
 use moon_phase::*;
 use moon_transit::*;
+use sun_transit::*;
 
 use alloc::collections::BTreeMap;
-use alloc::string::ToString;
 use alloc::string::String;
+use alloc::string::ToString;
 
 /// Get the ephemeris of a geodate
 pub fn get_ephemeris(timestamp: i64, longitude: f64, latitude: f64) -> BTreeMap<i64, String> {
@@ -20,7 +20,7 @@ pub fn get_ephemeris(timestamp: i64, longitude: f64, latitude: f64) -> BTreeMap<
         ("Equinox", get_next_march_equinox(day_begin_at)),
         ("Equinox", get_next_september_equinox(day_begin_at)),
         ("Solstice", get_next_december_solstice(day_begin_at)),
-        ("Solstice", get_next_june_solstice(day_begin_at))
+        ("Solstice", get_next_june_solstice(day_begin_at)),
     ];
     for (name, e) in es {
         if e < day_end_at {
@@ -33,7 +33,7 @@ pub fn get_ephemeris(timestamp: i64, longitude: f64, latitude: f64) -> BTreeMap<
         ("New Moon", get_new_moon(n)),
         ("First Quarter Moon", get_first_quarter_moon(n + 0.25)),
         ("Full Moon", get_full_moon(n + 0.50)),
-        ("Last Quarter Moon", get_last_quarter_moon(n + 0.75))
+        ("Last Quarter Moon", get_last_quarter_moon(n + 0.75)),
     ];
     for (name, e) in es {
         if day_begin_at < e && e < day_end_at {

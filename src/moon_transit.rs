@@ -1,7 +1,7 @@
+use delta_time::*;
 use julian::*;
 use math::*;
 use sun_transit::*;
-use delta_time::*;
 
 #[cfg(not(feature = "std"))]
 use num_traits::Float;
@@ -9,7 +9,7 @@ use num_traits::Float;
 #[derive(PartialEq)]
 enum Event {
     Moonrise,
-    Moonset
+    Moonset,
 }
 
 fn get_moon_position(julian_day: f64) -> (f64, f64, f64) {
@@ -18,34 +18,34 @@ fn get_moon_position(julian_day: f64) -> (f64, f64, f64) {
 
     // Mean longitude of the Moon
     // (L')
-    let lm = 218.316_4477 + 481_267.881234_21 * t
+    let lm = 218.316_447_7 + 481_267.881234_21 * t
            - 0.0015786 * t.powi(2)
            + t.powi(3) / 538_841.0
            - t.powi(4) / 65_194_000.0;
 
     // Mean elongation of the Moon
     // (D)
-    let dm = 297.850_1921 + 445_267.1114034 * t
-           - 0.001_8819 * t.powi(2)
+    let dm = 297.850_192_1 + 445_267.1114034 * t
+           - 0.001_881_9 * t.powi(2)
            + t.powi(3) / 545_868.0 - t.powi(4) / 113_065_000.0;
 
     // Sun mean anomaly
     // (M)
-    let sm = 357.529_1092 + 35_999.050_2909 * t // TODO: rename `sm` to `ms`
-           - 0.000_1536 * t.powi(2)
+    let sm = 357.529_109_2 + 35_999.050_290_9 * t // TODO: rename `sm` to `ms`
+           - 0.000_153_6 * t.powi(2)
            + t.powi(3) / 24_490_000.0;
 
     // Moon mean anomaly
     // (M')
-    let mm = 134.963_3964 + 477_198.867_5055 * t
-           + 0.008_7414 * t.powi(2)
+    let mm = 134.963_396_4 + 477_198.867_505_5 * t
+           + 0.008_741_4 * t.powi(2)
            - t.powi(3) / 69_699.0
            - t.powi(4) / 14_712_000.0;
 
     // Moon argument of latitude
     // (F)
-    let f = 93.272_0950 + 483_202.017_5233 * t
-          - 0.003_6539 * t.powi(2)
+    let f = 93.272_095_0 + 483_202.017_523_3 * t
+          - 0.003_653_9 * t.powi(2)
           - t.powi(3) / 3_526_000.0
           + t.powi(4) / 863_310_000.0;
 
@@ -196,7 +196,7 @@ fn get_moon_position(julian_day: f64) -> (f64, f64, f64) {
     // (Σr)
     let mut eb = 0.0;
 
-    let e = 1.0 - 0.002_516 * t - 0.000_0074 * t.powi(2);
+    let e = 1.0 - 0.002_516 * t - 0.000_007_4 * t.powi(2);
 
     for (dm_arg, sm_arg, mm_arg, f_arg, sin_arg, cos_arg, sin_arg2) in terms {
         let arg = dm * dm_arg
@@ -294,8 +294,8 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> O
     // H0
     let cos_hh0 = (sin_deg(h0) - sin_deg(lat) * sin_deg(dec2))
                 / (cos_deg(lat) * cos_deg(dec2));
-    if cos_hh0 < -1.0 || cos_hh0 > 1.0 {
-        return None
+    if !(-1.0..=1.0).contains(&cos_hh0) {
+        return None;
     }
     let hh0 = acos_deg(cos_hh0);
     let hh0 = modulo(hh0, 180.0);
@@ -318,7 +318,7 @@ fn get_time_of(event: Event, timestamp: i64, longitude: f64, latitude: f64) -> O
 
     let m = match event {
         Event::Moonrise => m0 - hh0 / 360.0,
-        Event::Moonset  => m0 + hh0 / 360.0
+        Event::Moonset => m0 + hh0 / 360.0,
     };
     let m = modulo(m, 1.0); // Fraction of a day
 
