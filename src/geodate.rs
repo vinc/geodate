@@ -132,9 +132,12 @@ pub fn get_formatted_date(format: &str, timestamp: i64, longitude: f64) -> Strin
     };
 
     y += ((zero - epoch_zero) as f64 / 86400.0 / 365.25).round() as i64;
-    if zero < epoch_zero {
+
+    if y < 0 {
         y = y.abs();
-        res.insert(0, '-');
+        if res.contains("%h") || res.contains("%y") || res.contains("%u") {
+            res.insert(0, '-');
+        }
     }
 
     if res.contains("%h") {
