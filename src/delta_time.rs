@@ -39,7 +39,7 @@ pub fn delta_time(year: f64) -> f64 {
     };
     let u = k + (year - 2000.0) / 100.0;
 
-    a0 + a1 * u.powi(1)
+    a0 + a1 * u
        + a2 * u.powi(2)
        + a3 * u.powi(3)
        + a4 * u.powi(4)

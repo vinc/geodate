@@ -19,10 +19,7 @@ fn get_time_of(event: Event, timestamp: i64) -> i64 {
 
     let y = jde_to_julian_year(jd).floor();
 
-    // Convert AD year to millenia, from 2000 AD
-    let m = (y - 2000.0) / 1000.0;
-
-    let jdme = get_jdme(event, m);
+    let jdme = get_jdme(event, y);
 
     // Julian century
     let t = (jdme - J2000) / 36525.0;
@@ -37,8 +34,17 @@ fn get_time_of(event: Event, timestamp: i64) -> i64 {
     terrestrial_to_universal_time(julian_to_unix(jdme + (0.00001 * s) / l))
 }
 
-fn get_jdme(event: Event, m: f64) -> f64 {
-    let jdme_terms = vec![
+fn get_jdme(event: Event, y: f64) -> f64 {
+    // For the years -1000 to +1000
+    let jdme_terms_before_1000 = vec![
+        (1721_139.29189, 365_242.13740,  0.06134,  0.00111, -0.00071), // March Equinoxe
+        (1721_233.25401, 365_241.72562, -0.05323,  0.00907, -0.00025), // June Solstice
+        (1721_325.70455, 365_242.49558, -0.11677, -0.00297,  0.00074), // September Equinoxe
+        (1721_414.39987, 365_242.88257, -0.00769, -0.00933, -0.00006)  // December Solstice
+    ];
+    
+    // For the years +1000 to +3000
+    let jdme_terms_after_1000 = vec![
         (2451_623.80984, 365_242.37404,  0.05169, -0.00411, -0.00057), // March Equinoxe
         (2451_716.56767, 365_241.62603,  0.00325,  0.00888, -0.00030), // June Solstice
         (2451_810.21715, 365_242.01767, -0.11575,  0.00337,  0.00078), // September Equinoxe
@@ -46,7 +52,13 @@ fn get_jdme(event: Event, m: f64) -> f64 {
     ];
 
     let i = event as usize;
-    let (a, b, c, d, e) = jdme_terms[i];
+    let (m, (a, b, c, d, e)) = if y >= 1000.0 {
+        let m = (y - 2000.0) / 1000.0;
+        (m, jdme_terms_after_1000[i])
+    } else {
+        let m = y / 1000.0;
+        (m, jdme_terms_before_1000[i])
+    };
 
     a + b * m
       + c * m.powi(2)
