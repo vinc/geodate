@@ -6,8 +6,29 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.5.0] - 2024-09-29
+
+### Added
+- Add JDME for the years -1000 to +1000 (#58)
+- Add no_std support (#36)
+
 ### Fixed
+- Fix negative dates (#62)
 - Fix off-by-one error some days at midnight
+
+### Changed
+- Update GitHub Actions (#60)
+- Update time dependency (#40)
+- Migrate from TravisCI to GitHub Actions (#30)
+
+### Bumped
+- Bump num-traits from 0.2.17 to 0.2.18 (#70)
+- Bump time from 0.3.30 to 0.3.31 (#67)
+- Bump time from 0.3.20 to 0.3.30 (#64)
+- Bump num-traits from 0.2.15 to 0.2.17 (#65)
+- Bump time from 0.3.9 to 0.3.20 (#53)
+- Bump num-traits from 0.2.14 to 0.2.15 (#42)
+- Bump time from 0.1.43 to 0.3.9 (#41)
 
 ## [0.4.0] - 2020-07-30
 
