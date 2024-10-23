@@ -31,9 +31,9 @@ pub fn get_ephemeris(timestamp: i64, longitude: f64, latitude: f64) -> BTreeMap<
     let n = get_lunation_number(day_begin_at); // FIXME: Potential bug here
     let es = vec![
         ("New Moon", get_new_moon(n)),
-        ("First Quarter Moon", get_first_quarter_moon(n + 0.25)),
-        ("Full Moon", get_full_moon(n + 0.50)),
-        ("Last Quarter Moon", get_last_quarter_moon(n + 0.75))
+        ("First Quarter Moon", get_first_quarter_moon(n)),
+        ("Full Moon", get_full_moon(n)),
+        ("Last Quarter Moon", get_last_quarter_moon(n))
     ];
     for (name, e) in es {
         if day_begin_at < e && e < day_end_at {

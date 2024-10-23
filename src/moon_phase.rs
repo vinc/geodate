@@ -17,18 +17,13 @@ enum MoonPhase {
 
 // From "Astronomical Algorithms"
 // By Jean Meeus
-fn get_time_of(phase: MoonPhase, lunation_number: f64) -> i64 {
-    /*
-    // TODO: use `lunation_number: i64`
+fn get_time_of(phase: MoonPhase, lunation_number: i64) -> i64 {
     let k = match phase {
-        MoonPhase::NewMoon          => (lunation_number as f64) + 0.00;
-        MoonPhase::FirstQuarterMoon => (lunation_number as f64) + 0.25;
-        MoonPhase::FullMoon         => (lunation_number as f64) + 0.50;
-        MoonPhase::LastQuarterMoon  => (lunation_number as f64) + 0.75;
+        MoonPhase::NewMoon          => (lunation_number as f64) + 0.00,
+        MoonPhase::FirstQuarterMoon => (lunation_number as f64) + 0.25,
+        MoonPhase::FullMoon         => (lunation_number as f64) + 0.50,
+        MoonPhase::LastQuarterMoon  => (lunation_number as f64) + 0.75,
     };
-    */
-
-    let k = lunation_number;
     let t = k / 1236.85;
 
     let e = 1.0 - 0.002_516 * t - 0.000_007_4 * t.powi(2);
@@ -211,19 +206,19 @@ fn get_time_of(phase: MoonPhase, lunation_number: f64) -> i64 {
     terrestrial_to_universal_time(julian_to_unix(jde))
 }
 
-pub fn get_new_moon(lunation_number: f64) -> i64 {
+pub fn get_new_moon(lunation_number: i64) -> i64 {
     get_time_of(MoonPhase::NewMoon, lunation_number)
 }
 
-pub fn get_first_quarter_moon(lunation_number: f64) -> i64 {
+pub fn get_first_quarter_moon(lunation_number: i64) -> i64 {
     get_time_of(MoonPhase::FirstQuarterMoon, lunation_number)
 }
 
-pub fn get_full_moon(lunation_number: f64) -> i64 {
+pub fn get_full_moon(lunation_number: i64) -> i64 {
     get_time_of(MoonPhase::FullMoon, lunation_number)
 }
 
-pub fn get_last_quarter_moon(lunation_number: f64) -> i64 {
+pub fn get_last_quarter_moon(lunation_number: i64) -> i64 {
     get_time_of(MoonPhase::LastQuarterMoon, lunation_number)
 }
 
@@ -239,8 +234,8 @@ enum LunationNumbering {
 */
 
 /// Computes the Lunation Number since the first new moon of 2000
-pub fn get_lunation_number(timestamp: i64) -> f64 {
-    ((unix_to_year(timestamp) - 2000.0) * 12.3685).floor() // TODO: `as i64`
+pub fn get_lunation_number(timestamp: i64) -> i64 {
+    ((unix_to_year(timestamp) - 2000.0) * 12.3685).floor() as i64
 }
 
 pub fn get_next_new_moon(timestamp: i64) -> i64 {
@@ -248,7 +243,7 @@ pub fn get_next_new_moon(timestamp: i64) -> i64 {
     if new_moon > timestamp {
         new_moon
     } else {
-        get_new_moon(get_lunation_number(timestamp) + 1.0)
+        get_new_moon(get_lunation_number(timestamp) + 1)
     }
 }
 
@@ -262,63 +257,63 @@ mod tests {
         // Example 49.a from "Astronomical Algoritms"
         // New Moon: 1977-02-18 03:37:42 TD
         let t = terrestrial_to_universal_time(parse_time("1977-02-18T03:37:42.00+00:00"));
-        assert_eq!(-283.0, get_lunation_number(t));
+        assert_eq!(-283, get_lunation_number(t));
 
         // Later in the day
         let t = parse_time("1977-02-18T12:00:00.00+00:00");
-        assert_eq!(-283.0, get_lunation_number(t));
+        assert_eq!(-283, get_lunation_number(t));
 
         // Later in the month
         let t = parse_time("1977-02-28T12:00:00.00+00:00");
-        assert_eq!(-283.0, get_lunation_number(t));
+        assert_eq!(-283, get_lunation_number(t));
 
         // Earlier in the day
         let t = parse_time("1977-02-18T01:00:00.00+00:00");
-        assert_eq!(-283.0, get_lunation_number(t));
+        assert_eq!(-283, get_lunation_number(t));
 
         // A few days before
         let t = parse_time("1977-02-14T12:00:00.00+00:00");
-        assert_eq!(-283.0, get_lunation_number(t)); // FIXME: should be -284
+        assert_eq!(-283, get_lunation_number(t)); // FIXME: should be -284
 
         // A week before
         let t = parse_time("1977-02-11T12:00:00.00+00:00");
-        assert_eq!(-284.0, get_lunation_number(t));
+        assert_eq!(-284, get_lunation_number(t));
 
         // Meeus Lunation 0
         let t = parse_time("2000-01-06T18:14:00.00+00:00");
-        assert_eq!(0.0, get_lunation_number(t));
+        assert_eq!(0, get_lunation_number(t));
 
         // Brown Lunation 1
         let t = parse_time("1923-01-17T02:41:00.00+00:00");
-        assert_eq!(-952.0, get_lunation_number(t));
+        assert_eq!(-952, get_lunation_number(t));
 
         // Islamic Lunation 1
         let t = parse_time("0622-07-16T00:00:00.00+00:00");
-        assert_eq!(-17037.0, get_lunation_number(t));
+        assert_eq!(-17037, get_lunation_number(t));
 
         // Thai Lunation 0
         let t = parse_time("0638-03-22T00:00:00.00+00:00");
-        assert_eq!(-16843.0, get_lunation_number(t)); // FIXME: should be -16842
+        assert_eq!(-16843, get_lunation_number(t)); // FIXME: should be -16842
     }
 
     #[test]
     fn get_new_moon_test() {
         // Example 49.a from "Astronomical Algoritms"
         // New Moon: 1977-02-18 03:37:42 TD
-        let lunation_number = -283.0;
+        let lunation_number = -283;
         let t = terrestrial_to_universal_time(parse_time("1977-02-18T03:37:42.00+00:00"));
         assert_eq!(t, get_new_moon(lunation_number));
 
         // First new moon of 1970
         let t = parse_time("1970-01-07T20:35:27.00+00:00");
-        assert_eq!(t, get_new_moon(get_lunation_number(0) + 1.0));
+        assert_eq!(t, get_new_moon(get_lunation_number(0) + 1));
     }
 
     #[test]
     fn get_last_quarter_moon_test() {
         // Example 49.b from "Astronomical Algoritms"
         // Last Quarter Moon: 2044-01-21 23:48:17 TD
-        let lunation_number = 544.75;
+        let lunation_number = 544;
         let t = terrestrial_to_universal_time(parse_time("2044-01-21T23:48:17+00:00"));
         assert_eq!(t, get_last_quarter_moon(lunation_number));
     }
