@@ -1,12 +1,11 @@
 use geodate::*;
 
-use alloc::string::String;
 use alloc::vec::Vec;
 
 /// Reverse a geodate into a timestamp
-pub fn get_timestamp(format: String, date: String, longitude: f64) -> i64 {
-    let y = date_year(date.clone());
-    let n = date_index(date.clone());
+pub fn get_timestamp(format: &str, date: &str, longitude: f64) -> i64 {
+    let y = date_year(date);
+    let n = date_index(date);
 
     // Approximate timestamps of bounds
     let mut min = (y - 2) * 365 * 86400;
@@ -30,7 +29,7 @@ pub fn get_timestamp(format: String, date: String, longitude: f64) -> i64 {
 
     loop {
         let mid = (min + max) / 2;
-        let i = date_index(get_formatted_date(&format, mid, longitude));
+        let i = date_index(&get_formatted_date(&format, mid, longitude));
         if i == n || mid == min || mid == max {
             return mid;
         }
@@ -43,7 +42,7 @@ pub fn get_timestamp(format: String, date: String, longitude: f64) -> i64 {
 }
 
 // Extract year from a geodate string
-fn date_year(date: String) -> i64 {
+fn date_year(date: &str) -> i64 {
     let parts: Vec<_> = date.split(":").collect();
 
     let y = match parts.len() {
@@ -56,8 +55,8 @@ fn date_year(date: String) -> i64 {
 }
 
 // Transform a geodate string into an integer for comparison
-fn date_index(date: String) -> i64 {
-    let year = date_year(date.clone());
+fn date_index(date: &str) -> i64 {
+    let year = date_year(date);
     let mut index = date.replace(":", "").parse::<i64>().unwrap();
     if index < 0 { // Special case for negative years
         index = (year + 0) * 100_000_000 - (index % 100_000_000);

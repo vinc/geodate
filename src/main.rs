@@ -22,7 +22,7 @@ fn main() {
     let args: Vec<String> = env::args().map(|arg|
         // Encode float arguments that can be negative to avoid getopts panic
         // from unrecognized options.
-        if let Some(x) = arg.parse::<f64>().ok() {
+        if let Ok(x) = arg.parse() {
             encode_float(x)
         } else {
             arg
@@ -77,7 +77,7 @@ fn main() {
 
     // Convert geodate string back into unix timestamp
     if matches.free.len() == 4 && matches.free[3].contains(":") {
-        println!("{}", get_timestamp(format, matches.free[3].clone(), lon));
+        println!("{}", get_timestamp(&format, &matches.free[3], lon));
         return;
     }
 

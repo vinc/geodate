@@ -74,7 +74,7 @@ fn get_time_of(phase: MoonPhase, lunation_number: f64) -> i64 {
     // Correction to be added to JDE
 
     // [New Moon, First Quarter, Full Moon, Last Quarter]
-    let num_cors = vec![
+    let num_cors = [
         [-0.40720, -0.62801, -0.40614, -0.62801],
         [ 0.17241,  0.17172,  0.17302,  0.17172],
         [ 0.01608, -0.01183,  0.01614, -0.01183],
@@ -104,7 +104,7 @@ fn get_time_of(phase: MoonPhase, lunation_number: f64) -> i64 {
 
     // Multiply each previous terms by E to a given power
     // [new moon, first quarter, full moon, last quarter]
-    let pow_cors = vec![
+    let pow_cors = [
         [0, 0, 0, 0],
         [1, 1, 1, 1],
         [0, 1, 0, 1],
@@ -138,7 +138,7 @@ fn get_time_of(phase: MoonPhase, lunation_number: f64) -> i64 {
     let terms = [s, m, f, o];
 
     // [new and full moon, first and last quarter]
-    let mul_cors = vec![
+    let mul_cors = [
         [[ 0.0,  1.0,  0.0,  0.0], [ 0.0,  1.0,  0.0,  0.0]],
         [[ 1.0,  0.0,  0.0,  0.0], [ 1.0,  0.0,  0.0,  0.0]],
         [[ 0.0,  2.0,  0.0,  0.0], [ 1.0,  1.0,  0.0,  0.0]],
