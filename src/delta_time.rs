@@ -14,7 +14,7 @@ pub fn delta_time(year: f64) -> f64 {
 
     // From "Delta T: Polynomial Approximation of Time Period 1620-2013"
     // By M. Khalid, Mariam Sultana, and Faheem Zaidi (2014)
-    let terms = vec![
+    let terms = [
         (3.670, 76.541, -253.532,  695.901, -1256.982,   627.152),
         (3.120, 10.872,  -40.744,  236.890,  -351.537,    36.612),
         (2.495, 13.480,   13.075,    8.635,    -3.307,  -128.294),

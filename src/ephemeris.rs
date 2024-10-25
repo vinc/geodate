@@ -16,7 +16,7 @@ pub fn get_ephemeris(timestamp: i64, longitude: f64, latitude: f64) -> BTreeMap<
 
     events.insert(timestamp, "Current".to_string());
 
-    let es = vec![
+    let es = [
         ("Equinox", get_next_march_equinox(day_begin_at)),
         ("Equinox", get_next_september_equinox(day_begin_at)),
         ("Solstice", get_next_december_solstice(day_begin_at)),
@@ -29,7 +29,7 @@ pub fn get_ephemeris(timestamp: i64, longitude: f64, latitude: f64) -> BTreeMap<
     }
 
     let n = get_lunation_number(day_begin_at); // FIXME: Potential bug here
-    let es = vec![
+    let es = [
         ("New Moon", get_new_moon(n)),
         ("First Quarter Moon", get_first_quarter_moon(n + 0.25)),
         ("Full Moon", get_full_moon(n + 0.50)),

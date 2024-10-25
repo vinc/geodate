@@ -61,7 +61,7 @@ fn get_moon_position(julian_day: f64) -> (f64, f64, f64) {
 
     // Periodic terms for the longitude, distance and latitude of the Moon
     //     D,    M,   M',   F,        sine,         cosine,        sine
-    let terms = vec![
+    let terms = [
         (0.0,  0.0,  1.0,  0.0, 6_288_774.0, -20_905_355.0,         0.0),
         (2.0,  0.0, -1.0,  0.0, 1_274_027.0,  -3_699_111.0,         0.0),
         (2.0,  0.0,  0.0,  0.0,   658_314.0,  -2_955_968.0,         0.0),
@@ -376,7 +376,7 @@ mod tests {
     #[test]
     fn get_moonrise_test() {
         let accuracy = 90;
-        let times = vec![
+        let times = [
             ("2000-01-01T01:50:14+00:00", "2000-01-01T12:00:00+00:00", 0.0, 0.0),
             ("2000-01-01T02:37:20+00:00", "2000-01-01T12:00:00+00:00", 50.0, 0.0),
             ("2000-01-01T06:06:16+00:00", "2000-01-01T12:00:00+00:00", 50.0, -50.0),

@@ -36,7 +36,7 @@ fn get_time_of(event: Event, timestamp: i64) -> i64 {
 
 fn get_jdme(event: Event, y: f64) -> f64 {
     // For the years -1000 to +1000
-    let jdme_terms_before_1000 = vec![
+    let jdme_terms_before_1000 = [
         (1721_139.29189, 365_242.13740,  0.06134,  0.00111, -0.00071), // March Equinoxe
         (1721_233.25401, 365_241.72562, -0.05323,  0.00907, -0.00025), // June Solstice
         (1721_325.70455, 365_242.49558, -0.11677, -0.00297,  0.00074), // September Equinoxe
@@ -44,7 +44,7 @@ fn get_jdme(event: Event, y: f64) -> f64 {
     ];
     
     // For the years +1000 to +3000
-    let jdme_terms_after_1000 = vec![
+    let jdme_terms_after_1000 = [
         (2451_623.80984, 365_242.37404,  0.05169, -0.00411, -0.00057), // March Equinoxe
         (2451_716.56767, 365_241.62603,  0.00325,  0.00888, -0.00030), // June Solstice
         (2451_810.21715, 365_242.01767, -0.11575,  0.00337,  0.00078), // September Equinoxe
@@ -67,7 +67,7 @@ fn get_jdme(event: Event, y: f64) -> f64 {
 }
 
 fn get_periodic_terms(t: f64) -> f64 {
-    let terms = vec![
+    let terms = [
         (485.0, 324.96,   1934.136),
         (203.0, 337.23,  32964.467),
         (199.0, 342.08,     20.186),
@@ -169,7 +169,7 @@ mod tests {
         let accuracy = 11; // TODO: Improve accuracy
         let solstice_december_2012 = parse_time("2012-12-21T11:11:37.00+00:00");
 
-        let times = vec![
+        let times = [
             get_previous_december_solstice(parse_time("2014-06-01T00:00:00.00+00:00")),
             parse_time("2013-06-01T00:00:00.00+00:00"),
         ];
@@ -184,7 +184,7 @@ mod tests {
         let accuracy = 13; // TODO: Improve accuracy
         let solstice_december_2013 = parse_time("2013-12-21T17:11:00.00+00:00");
 
-        let times = vec![
+        let times = [
             get_next_december_solstice(parse_time("2012-06-01T00:00:00.00+00:00")),
             parse_time("2013-06-01T00:00:00.00+00:00"),
         ];
